@@ -48,6 +48,7 @@ scripts/boss/boss_ysondre.cpp \
 scripts/creature/mob_generic_creature.cpp \
 scripts/creature/simple_ai.cpp \
 scripts/creature/simple_ai.h \
+scripts/custom/teleporters.cpp \
 scripts/examples/example_creature.cpp \
 scripts/examples/example_escort.cpp \
 scripts/examples/example_gossip_codebox.cpp \

@@ -467,6 +467,10 @@
 			<Filter
 				Name="custom"
 				>
+				<File
+					RelativePath="..\scripts\custom\teleporters.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="areatrigger"

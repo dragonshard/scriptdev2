@@ -17,11 +17,169 @@
 /* ScriptData
 SDName: Ebon_Hold
 SD%Complete: 80
-SDComment:
+SDComment: Quest support: 12848, 12733
 SDCategory: Ebon Hold
 EndScriptData */
 
+/* ContentData
+npc_death_knight_initiate
+npc_unworthy_initiate_anchor
+npc_unworthy_initiate
+go_acherus_soul_prison
+EndContentData */
+
 #include "precompiled.h"
+
+/*######
+## npc_death_knight_initiate
+######*/
+
+enum
+{
+    SAY_DUEL_A                  = -1609016,
+    SAY_DUEL_B                  = -1609017,
+    SAY_DUEL_C                  = -1609018,
+    SAY_DUEL_D                  = -1609019,
+    SAY_DUEL_E                  = -1609020,
+    SAY_DUEL_F                  = -1609021,
+    SAY_DUEL_G                  = -1609022,
+    SAY_DUEL_H                  = -1609023,
+    SAY_DUEL_I                  = -1609024,
+
+    SPELL_DUEL                  = 52996,
+    SPELL_DUEL_TRIGGERED        = 52990,
+    SPELL_DUEL_VICTORY          = 52994,
+    SPELL_DUEL_FLAG             = 52991,
+
+    QUEST_DEATH_CHALLENGE       = 12733,
+    FACTION_HOSTILE             = 2068
+};
+
+int32 m_auiRandomSay[] =
+{
+    SAY_DUEL_A, SAY_DUEL_B, SAY_DUEL_C, SAY_DUEL_D, SAY_DUEL_E, SAY_DUEL_F, SAY_DUEL_G, SAY_DUEL_H, SAY_DUEL_I
+};
+
+#define GOSSIP_ACCEPT_DUEL      "I challenge you, death knight!"
+
+struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
+{
+    npc_death_knight_initiateAI(Creature* pCreature) : ScriptedAI(pCreature) { Reset(); }
+
+    uint64 m_uiDuelerGUID;
+    uint32 m_uiDuelTimer;
+    bool m_bIsDuelInProgress;
+
+    void Reset()
+    {
+        if (m_creature->getFaction() != m_creature->GetCreatureInfo()->faction_A)
+            m_creature->setFaction(m_creature->GetCreatureInfo()->faction_A);
+
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
+
+        m_uiDuelerGUID = 0;
+        m_uiDuelTimer = 5000;
+        m_bIsDuelInProgress = false;
+    }
+
+    void AttackedBy(Unit* pAttacker)
+    {
+        if (m_creature->getVictim())
+            return;
+
+        if (m_creature->IsFriendlyTo(pAttacker))
+            return;
+
+        AttackStart(pAttacker);
+    }
+
+    void SpellHit(Unit* pCaster, const SpellEntry* pSpell)
+    {
+        if (!m_bIsDuelInProgress && pSpell->Id == SPELL_DUEL_TRIGGERED)
+        {
+            m_uiDuelerGUID = pCaster->GetGUID();
+            m_bIsDuelInProgress = true;
+        }
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    {
+        if (m_bIsDuelInProgress && uiDamage > m_creature->GetHealth())
+        {
+            uiDamage = 0;
+
+            if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
+                m_creature->CastSpell(pUnit, SPELL_DUEL_VICTORY, true);
+
+            //possibly not evade, but instead have end sequenze
+            EnterEvadeMode();
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        {
+            if (m_bIsDuelInProgress)
+            {
+                if (m_uiDuelTimer < uiDiff)
+                {
+                    m_creature->setFaction(FACTION_HOSTILE);
+
+                    if (Unit* pUnit = Unit::GetUnit(*m_creature, m_uiDuelerGUID))
+                        AttackStart(pUnit);
+                }
+                else
+                    m_uiDuelTimer -= uiDiff;
+            }
+            return;
+        }
+
+        // TODO: spells
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_npc_death_knight_initiate(Creature* pCreature)
+{
+    return new npc_death_knight_initiateAI(pCreature);
+}
+
+bool GossipHello_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature)
+{
+    if (pPlayer->GetQuestStatus(QUEST_DEATH_CHALLENGE) == QUEST_STATUS_INCOMPLETE)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ACCEPT_DUEL, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF + 1);
+        pPlayer->SEND_GOSSIP_MENU(13433, pCreature->GetGUID());
+        return true;
+    }
+    return false;
+}
+
+bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        pPlayer->CLOSE_GOSSIP_MENU();
+
+        if (((npc_death_knight_initiateAI*)pCreature)->m_bIsDuelInProgress)
+            return true;
+
+        pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
+
+        int32 uiSayId = rand()% (sizeof(m_auiRandomSay)/sizeof(int32));
+        DoScriptText(m_auiRandomSay[uiSayId], pCreature, pPlayer);
+
+        pCreature->CastSpell(pPlayer, SPELL_DUEL, false);
+        pCreature->CastSpell(pPlayer, SPELL_DUEL_FLAG, true);
+    }
+    return true;
+}
+
+/*######
+##
+######*/
 
 enum
 {
@@ -33,6 +191,11 @@ enum
     SPELL_CHAINED_PESANT_CHEST      = 54612,
     SPELL_CHAINED_PESANT_BREATH     = 54613,
     SPELL_INITIATE_VISUAL           = 51519,
+
+    SPELL_BLOOD_STRIKE              = 52374,
+    SPELL_DEATH_COIL                = 52375,
+    SPELL_ICY_TOUCH                 = 52372,
+    SPELL_PLAGUE_STRIKE             = 52373,
 
     NPC_ANCHOR                      = 29521,
     NPC_INITATE_QCREDIT             = 29519,
@@ -70,8 +233,12 @@ DisplayToSpell m_aDisplayToSpell[] =
     {25370, 51545},                                         // troll F
     {25371, 51548},                                         // tauren F
     {25372, 51550},                                         // forsaken F
-    {25373, 51541}                                          // belf M
+    {25373, 51551}                                          // belf M
 };
+
+/*######
+## npc_unworthy_initiate_anchor
+######*/
 
 struct MANGOS_DLL_DECL npc_unworthy_initiate_anchorAI : public ScriptedAI
 {
@@ -107,6 +274,10 @@ CreatureAI* GetAI_npc_unworthy_initiate_anchor(Creature* pCreature)
     return new npc_unworthy_initiate_anchorAI(pCreature);
 }
 
+/*######
+## npc_unworthy_initiate
+######*/
+
 struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
 {
     npc_unworthy_initiateAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -135,6 +306,10 @@ struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
     uint32 m_uiAnchorCheckTimer;
     uint32 m_uiPhase;
     uint32 m_uiPhaseTimer;
+    uint32 m_uiBloodStrike_Timer;
+    uint32 m_uiDeathCoil_Timer;
+    uint32 m_uiIcyTouch_Timer;
+    uint32 m_uiPlagueStrike_Timer;
 
     void Reset()
     {
@@ -144,6 +319,10 @@ struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
         m_uiAnchorCheckTimer = 5000;
         m_uiPhase = PHASE_INACTIVE_OR_COMBAT;
         m_uiPhaseTimer = 7500;
+        m_uiBloodStrike_Timer = 4000;
+        m_uiDeathCoil_Timer = 6000;
+        m_uiIcyTouch_Timer = 2000;
+        m_uiPlagueStrike_Timer = 5000;
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_UNK_8);
     }
@@ -208,7 +387,29 @@ struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
             if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
                 return;
 
-            // TODO: spells
+            if (m_uiBloodStrike_Timer < uiDiff)
+            {
+                DoCast(m_creature->getVictim(),SPELL_BLOOD_STRIKE);
+                m_uiBloodStrike_Timer = 9000;
+            }else m_uiBloodStrike_Timer -= uiDiff;
+
+            if (m_uiDeathCoil_Timer < uiDiff)
+            {
+                DoCast(m_creature->getVictim(),SPELL_DEATH_COIL);
+                m_uiDeathCoil_Timer = 8000;
+            }else m_uiDeathCoil_Timer -= uiDiff;
+
+            if (m_uiIcyTouch_Timer < uiDiff)
+            {
+                DoCast(m_creature->getVictim(),SPELL_ICY_TOUCH);
+                m_uiIcyTouch_Timer = 8000;
+            }else m_uiIcyTouch_Timer -= uiDiff;
+
+            if (m_uiPlagueStrike_Timer < uiDiff)
+            {
+                DoCast(m_creature->getVictim(),SPELL_PLAGUE_STRIKE);
+                m_uiPlagueStrike_Timer = 8000;
+            }else m_uiPlagueStrike_Timer -= uiDiff;
 
             DoMeleeAttackIfReady();
         }
@@ -255,7 +456,10 @@ CreatureAI* GetAI_npc_unworthy_initiate(Creature* pCreature)
     return new npc_unworthy_initiateAI(pCreature);
 }
 
-//simlilar approach as we would expect if spellEffect was implemented fully
+/*######
+## go_acherus_soul_prison
+######*/
+
 bool GOHello_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
 {
     if (Creature* pAnchor = GetClosestCreatureWithEntry(pGo, NPC_ANCHOR, INTERACTION_DISTANCE))
@@ -267,6 +471,13 @@ bool GOHello_go_acherus_soul_prison(Player* pPlayer, GameObject* pGo)
 void AddSC_ebon_hold()
 {
     Script *newscript;
+
+    newscript = new Script;
+    newscript->Name = "npc_death_knight_initiate";
+    newscript->GetAI = &GetAI_npc_death_knight_initiate;
+    newscript->pGossipHello = &GossipHello_npc_death_knight_initiate;
+    newscript->pGossipSelect = &GossipSelect_npc_death_knight_initiate;
+    newscript->RegisterSelf();
 
     newscript = new Script;
     newscript->Name = "npc_unworthy_initiate";

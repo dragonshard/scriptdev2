@@ -302,15 +302,13 @@ struct MANGOS_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
                     DoCast(m_creature,8149);
 
                     //Teleport self to a hiding spot (this causes errors in the mangos log but no real issues)
-                    m_creature->Relocate(HIDE_X,HIDE_Y,HIDE_Z,0);
-                    m_creature->SendMonsterMove(HIDE_X,HIDE_Y,HIDE_Z,0,true,0);
-                    m_creature->addUnitState(UNIT_STAT_FLEEING);
+                    m_creature->GetMap()->CreatureRelocation(m_creature, HIDE_X, HIDE_Y, HIDE_Z, 0.0f);
+                    m_creature->SendMonsterMove(HIDE_X, HIDE_Y, HIDE_Z, 0, MONSTER_MOVE_NONE, 0);
 
                     //Spawn nef and have him attack a random target
-                    Creature* Nefarian = NULL;
-                    Nefarian = m_creature->SummonCreature(CREATURE_NEFARIAN,NEF_X,NEF_Y,NEF_Z,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,120000);
-                    target = NULL;
+                    Creature* Nefarian = m_creature->SummonCreature(CREATURE_NEFARIAN,NEF_X,NEF_Y,NEF_Z,0,TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT,120000);
                     target = SelectUnit(SELECT_TARGET_RANDOM,0);
+
                     if (target && Nefarian)
                     {
                         Nefarian->AI()->AttackStart(target);
@@ -327,15 +325,14 @@ struct MANGOS_DLL_DECL boss_victor_nefariusAI : public ScriptedAI
         {
             if (NefCheckTime < diff)
             {
-                Unit* Nefarian = NULL;
-                Nefarian = Unit::GetUnit((*m_creature),NefarianGUID);
+                Creature* pNefarian = (Creature*)Unit::GetUnit((*m_creature),NefarianGUID);
 
                 //If nef is dead then we die to so the players get out of combat
                 //and cannot repeat the event
-                if (!Nefarian || !Nefarian->isAlive())
+                if (!pNefarian || !pNefarian->isAlive())
                 {
                     NefarianGUID = 0;
-                    m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                    m_creature->ForcedDespawn();
                 }
 
                 NefCheckTime = 2000;

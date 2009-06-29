@@ -158,12 +158,11 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         {
             for(std::list<uint64>::iterator itr = Sorcerers.begin(); itr != Sorcerers.end(); ++itr)
             {
-                if (Creature* Sorcerer = ((Creature*)Unit::GetUnit(*m_creature, *itr)))
-                    if (Sorcerer->isAlive())
-                    {
-                        Sorcerer->SetVisibility(VISIBILITY_OFF);
-                        Sorcerer->DealDamage(Sorcerer, Sorcerer->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
-                    }
+                if (Creature* pSorcerer = (Creature*)Unit::GetUnit(*m_creature, *itr))
+                {
+                    if (pSorcerer->isAlive())
+                        pSorcerer->ForcedDespawn();
+                }
             }
         }
 
@@ -191,7 +190,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         {
             if (m_creature->isAlive())
             {
-                m_pInstance->SetData(DATA_SHADEOFAKAMAEVENT, NOT_STARTED);
+                m_pInstance->SetData(TYPE_SHADE, NOT_STARTED);
             } else OpenMotherDoor();
 
             if (Unit* pAkama = Unit::GetUnit(*m_creature, m_pInstance->GetData64(DATA_AKAMA_SHADE)))
@@ -245,7 +244,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
         {
             if (Creature* pSorcerer = m_creature->SummonCreature(CREATURE_SORCERER, X, Y, Z_SPAWN, 0, TEMPSUMMON_DEAD_DESPAWN, 0))
             {
-                pSorcerer->RemoveUnitMovementFlag(MONSTER_MOVE_WALK);
+                pSorcerer->RemoveMonsterMoveFlag(MONSTER_MOVE_WALK);
                 pSorcerer->GetMotionMaster()->MovePoint(0, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
                 pSorcerer->SetUInt64Value(UNIT_FIELD_TARGET, m_creature->GetGUID());
                 Sorcerers.push_back(pSorcerer->GetGUID());
@@ -259,7 +258,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
             {
                 if (Creature* pSpawn = m_creature->SummonCreature(spawnEntries[i], X, Y, Z_SPAWN, 0, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 25000))
                 {
-                    pSpawn->RemoveUnitMovementFlag(MONSTER_MOVE_WALK);
+                    pSpawn->RemoveMonsterMoveFlag(MONSTER_MOVE_WALK);
                     pSpawn->GetMotionMaster()->MovePoint(0, AGGRO_X, AGGRO_Y, AGGRO_Z);
                 }
             }
@@ -300,7 +299,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
     {
         if (m_pInstance)
         {
-            m_pInstance->SetData(DATA_SHADEOFAKAMAEVENT, DONE);
+            m_pInstance->SetData(TYPE_SHADE, DONE);
             OpenMotherDoor();
         }
     }
@@ -326,7 +325,7 @@ struct MANGOS_DLL_DECL boss_shade_of_akamaAI : public ScriptedAI
                         pDefender->AI()->AttackStart(pAkama);
                     else
                     {
-                        pDefender->RemoveUnitMovementFlag(MONSTER_MOVE_WALK);
+                        pDefender->RemoveMonsterMoveFlag(MONSTER_MOVE_WALK);
                         pDefender->GetMotionMaster()->MovePoint(0, AKAMA_X, AKAMA_Y, AKAMA_Z);
                     }
                 }
@@ -461,7 +460,7 @@ struct MANGOS_DLL_DECL npc_akamaAI : public ScriptedAI
             ((boss_shade_of_akamaAI*)pShade->AI())->Reset();
 
             // Prevent players from trying to restart event
-            m_pInstance->SetData(DATA_SHADEOFAKAMAEVENT, IN_PROGRESS);
+            m_pInstance->SetData(TYPE_SHADE, IN_PROGRESS);
             m_creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
             ((boss_shade_of_akamaAI*)pShade->AI())->SetSelectableChannelers();
@@ -550,7 +549,7 @@ struct MANGOS_DLL_DECL npc_akamaAI : public ScriptedAI
                     {
                         ShadeHasDied = true;
                         WayPointId = 0;
-                        m_creature->SetUnitMovementFlags(MONSTER_MOVE_WALK);
+                        m_creature->AddMonsterMoveFlag(MONSTER_MOVE_WALK);
                         m_creature->GetMotionMaster()->MovePoint(WayPointId, AkamaWP[0].x, AkamaWP[0].y, AkamaWP[0].z);
                     }
                 }

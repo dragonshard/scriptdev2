@@ -1,0 +1,43 @@
+-- -1 602 000 HALLS OF LIGHTNING
+INSERT INTO `script_texts` (`entry`,`content_default`,`sound`,`type`,`language`,`comment`) VALUES
+-- General Bjarngrim
+   (-1602000, 'I am the greatest of my father\'s sons! Your end has come!', 14149,1,0,'bjarngrim SAY_AGGRO'),
+   (-1602001, 'So ends your curse!', 14153,1,0, 'bjarngrim SAY_SLAY_1'),
+   (-1602002, 'Flesh... is... weak!', 14154,1,0, 'bjarngrim SAY_SLAY_2'),
+   (-1602003, '...', 14155,1,0, 'bjarngrim SAY_SLAY_3'),
+   (-1602004, 'How can it be...? Flesh is not... stronger!', 14156,1,0, 'bjarngrim SAY_DEATH'),
+   (-1602005, 'Defend yourself, for all the good it will do!', 14151,1,0, 'bjarngrim SAY_BATTLE_STANCE'),
+   (-1602006, 'GRAAAAAH! Behold the fury of iron and steel!', 14152,1,0, 'bjarngrim SAY_BERSEKER_STANCE'),
+   (-1602007, 'Give me your worst!', 14150,1,0, 'bjarngrim SAY_DEFENSIVE_STANCE'),
+-- Ionar
+   (-1602008, 'You wish to confront the master? You must weather the storm!', 14453,1,0, 'ionar SAY_AGGRO'),
+   (-1602009, 'Shocking ... I know!', 14456,1,0, 'ionar SAY_SLAY_1'),
+   (-1602010, 'You atempt the unpossible.', 14457,1,0, 'ionar SAY_SLAY_2'),
+   (-1602011, 'Your spark of light is ... extinguish.', 14458,1,0, 'ionar SAY_SLAY_3'),
+   (-1602012, 'Master... you have guests.', 14459,1,0, 'ionar SAY_DEATH'),
+   (-1602013, 'The slightest spark shall be your undoing.', 14454,1,0, 'ionar SAY_SPLIT_1'),
+   (-1602014, 'No one is safe!', 14455,1,0, 'ionar SAY_SPLIT_2'),
+-- Loken
+   (-1602015, 'What hope is there for you? None!', 14162,1,0, 'loken SAY_AGGRO0'),
+   (-1602016, 'I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained beyond a constant. Your presence here confirms this.', 14160,1,0, 'loken SAY_INTRO_1'),
+   (-1602017, 'My master has shown me the future, and you have no place in it. Azeroth will be reborn in darkness. Yogg-Saron shall be released! The Pantheon shall fall!', 14162,1,0, 'loken SAY_INTRO_2'),
+   (-1602018, 'Only mortal...', 14166,1,0, 'loken SAY_SLAY_1'),
+   (-1602019, 'I... am... FOREVER!', 14167,1,0, 'loken SAY_SLAY_2'),
+   (-1602020, 'What little time you had, you wasted!', 14168,1,0, 'loken SAY_SLAY_3'),
+   (-1602021, 'My death... heralds the end of this world.', 14172,1,0, 'loken SAY_DEATH'),
+   (-1602022, 'You cannot hide from fate!', 14163,1,0, 'lokenSAY_NOVA_1'),
+   (-1602023, 'Come closer. I will make it quick.', 14164,1,0, 'loken SAY_NOVA_2'),
+   (-1602024, 'Your flesh cannot hold out for long.', 14165,1,0, 'loken SAY_NOVA_3'),
+   (-1602025, 'You stare blindly into the abyss!', 14169,1,0, 'loken SAY_75HEALTH'),
+   (-1602026, 'Your ignorance is profound. Can you not see where this path leads?', 14170,1,0, 'loken SAY_50HEALTH'),
+   (-1602027, 'You cross the precipice of oblivion!', 14171,1,0, 'loken SAY_25HEALTH'),
+-- Volkhan
+   (-1602028, 'It is you who have destroyed my children? You... shall... pay!',13960,1,0, 'volkhan SAY_AGGRO'),
+   (-1602029, 'The armies of iron will conquer all!',13965, 1,0,'volkhan SAY_SLAY_1'),
+   (-1602030, 'Ha, pathetic!',13966,1,0, 'volkhan SAY_SLAY_2'),
+   (-1602031, 'You have cost me too much work!',13967,1,0, 'volkhan SAY_SLAY_3'),
+   (-1602032, 'The master was right... to be concerned.',13968, 1,0,'volkhan SAY_DEATH'),
+   (-1602033, 'I will crush you beneath my boots!',13963, 1,0,'volkhan SAY_STOMP_1'),
+   (-1602034, 'All my work... undone!',13964, 1,0,'volkhan SAY_STOMP_2'),
+   (-1602035, 'Life from the lifelessness... death for you.',13961,1,0, 'volkhan SAY_FORGE_1'),
+   (-1602036, 'Nothing is wasted in the process. You will see....',13962, 1,0,'volkhan SAY_FORGE_2');

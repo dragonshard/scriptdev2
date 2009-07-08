@@ -389,6 +389,12 @@ scripts/zone/utgarde_keep/utgarde_keep/boss_skarvald_and_dalronn.cpp \
 scripts/zone/utgarde_keep/utgarde_keep/def_utgarde_keep.h \
 scripts/zone/utgarde_keep/utgarde_keep/instance_utgarde_keep.cpp \
 scripts/zone/utgarde_keep/utgarde_keep/utgarde_keep.cpp \
+scripts/zone/utgarde_keep/utgarde_pinnacle/boss_palehoof.cpp \
+scripts/zone/utgarde_keep/utgarde_pinnacle/boss_skadi.cpp \
+scripts/zone/utgarde_keep/utgarde_pinnacle/boss_svala.cpp \
+scripts/zone/utgarde_keep/utgarde_pinnacle/boss_ymiron.cpp \
+scripts/zone/utgarde_keep/utgarde_pinnacle/def_pinnacle.h \
+scripts/zone/utgarde_keep/utgarde_pinnacle/instance_pinnacle.cpp \
 scripts/zone/wailing_caverns/instance_wailing_caverns.cpp \
 scripts/zone/western_plaguelands/western_plaguelands.cpp \
 scripts/zone/westfall/westfall.cpp \

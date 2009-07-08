@@ -570,6 +570,13 @@ extern void AddSC_boss_skarvald_and_dalronn();
 extern void AddSC_instance_utgarde_keep();
 extern void AddSC_utgarde_keep();
 
+//Utgarde Pinnacle
+extern void AddSC_boss_palehoof();
+extern void AddSC_boss_svala();
+extern void AddSC_boss_ymiron();
+extern void AddSC_boss_skadi();
+extern void AddSC_instance_pinnacle();
+
 //Wailing caverns
 
 //Western plaguelands
@@ -1454,6 +1461,13 @@ void ScriptsInit()
     AddSC_boss_skarvald_and_dalronn();
     AddSC_instance_utgarde_keep();
     AddSC_utgarde_keep();
+
+    //Utgarde Pinnacle
+    AddSC_boss_palehoof();
+    AddSC_boss_svala();
+    AddSC_boss_ymiron();
+    AddSC_boss_skadi();
+    AddSC_instance_pinnacle();
 
     //Wailing caverns
 

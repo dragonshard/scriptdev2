@@ -22,6 +22,7 @@ SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_naxxramas.h"
 
 #define SAY_AGGRO1          -1533109
 #define SAY_AGGRO2          -1533110
@@ -38,8 +39,95 @@ EndScriptData */
 #define SPELL_ERUPTION      29371
 
 //Spells by boss
-#define SPELL_WILT          23772
+#define SPELL_DISRUPTION    29310
 #define SPELL_FEAVER        29998
+#define H_SPELL_FEAVER      55011
 
 //Spell by eye stalks
 #define SPELL_MIND_FLAY     26143
+
+
+struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
+{
+    boss_heiganAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+    bool m_bIsHeroicMode;
+
+    uint32 Disruption_Timer;
+    uint32 Feaver_Timer;
+
+    void Reset()
+    {
+        Disruption_Timer = 5000+rand()%10000;
+        Feaver_Timer = 40000;
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_HEIGAN, NOT_STARTED);
+    }
+
+    void Aggro(Unit *who)
+    {
+        switch (rand()%3)
+        {
+            case 0: DoScriptText(SAY_AGGRO1, m_creature); break;
+            case 1: DoScriptText(SAY_AGGRO2, m_creature); break;
+            case 2: DoScriptText(SAY_AGGRO3, m_creature); break;
+        }
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_HEIGAN, IN_PROGRESS);
+    }
+
+    void KilledUnit(Unit* victim)
+    {
+        DoScriptText(SAY_SLAY, m_creature);
+    }
+
+    void JustDied(Unit* Killer)
+    {
+        DoScriptText(SAY_DEATH, m_creature);
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_HEIGAN, DONE);
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+            return;
+
+        if (Disruption_Timer < diff)
+        {
+            DoCast(m_creature->getVictim(), SPELL_DISRUPTION);
+            Disruption_Timer = 5000+rand()%10000;
+        }else Disruption_Timer -= diff;
+
+        if (Feaver_Timer < diff)
+        {
+            DoCast(m_creature->getVictim(), m_bIsHeroicMode ? H_SPELL_FEAVER : SPELL_FEAVER);
+            Feaver_Timer = 40000;
+        }else Feaver_Timer -= diff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_boss_heigan(Creature* pCreature)
+{
+    return new boss_heiganAI(pCreature);
+}
+
+void AddSC_boss_heigan()
+{
+    Script *newscript;
+    newscript = new Script;
+    newscript->Name = "boss_heigan";
+    newscript->GetAI = &GetAI_boss_heigan;
+    newscript->RegisterSelf();
+}

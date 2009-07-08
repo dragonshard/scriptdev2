@@ -22,6 +22,7 @@ SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_naxxramas.h"
 
 #define SAY_GREET                   -1533009
 #define SAY_AGGRO1                  -1533010
@@ -43,7 +44,15 @@ EndScriptData */
 
 struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
 {
-    boss_faerlinaAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+    boss_faerlinaAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+    bool m_bIsHeroicMode;
 
     uint32 PoisonBoltVolley_Timer;
     uint32 RainOfFire_Timer;
@@ -56,6 +65,9 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         RainOfFire_Timer = 16000;
         Enrage_Timer = 60000;
         HasTaunted = false;
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_FAERLINA, NOT_STARTED);
     }
 
     void Aggro(Unit *who)
@@ -67,6 +79,9 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
             case 2: DoScriptText(SAY_AGGRO3, m_creature); break;
             case 3: DoScriptText(SAY_AGGRO4, m_creature); break;
         }
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_FAERLINA, IN_PROGRESS);
     }
 
     void MoveInLineOfSight(Unit *who)
@@ -92,6 +107,9 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_FAERLINA, DONE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -102,7 +120,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         //PoisonBoltVolley_Timer
         if (PoisonBoltVolley_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_POSIONBOLT_VOLLEY);
+            DoCast(m_creature->getVictim(), m_bIsHeroicMode ? H_SPELL_POSIONBOLT_VOLLEY : SPELL_POSIONBOLT_VOLLEY);
             PoisonBoltVolley_Timer = 11000;
         }else PoisonBoltVolley_Timer -= diff;
 
@@ -118,8 +136,8 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         //Enrage_Timer
         if (Enrage_Timer < diff)
         {
-            DoCast(m_creature,SPELL_ENRAGE);
-            Enrage_Timer = 61000;
+            DoCast(m_creature, m_bIsHeroicMode ? H_SPELL_ENRAGE : SPELL_ENRAGE);
+            Enrage_Timer = 60000 + rand()%20000;
         }else Enrage_Timer -= diff;
 
         DoMeleeAttackIfReady();

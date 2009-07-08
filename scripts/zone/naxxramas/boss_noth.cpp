@@ -22,6 +22,7 @@ SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_naxxramas.h"
 
 enum
 {
@@ -43,7 +44,8 @@ enum
     SPELL_SUMMON_GUARDIAN_AND_CONSTRUCT = 29269,
 
     NPC_PLAGUED_WARRIOR                 = 16984,
-
+    NPC_PLAGUED_CHAMPIONS               = 16983,
+    NPC_PLAGUED_GUARDIANS               = 16981,
 };
 
 uint32 m_auiSpellSummonPlaguedWarrior[]=
@@ -82,15 +84,37 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
     ScriptedInstance* m_pInstance;
     bool m_bIsHeroicMode;
 
+    bool isTeleported;
+
+    uint8 SecondPhaseCounter;
+
     uint32 Blink_Timer;
     uint32 Curse_Timer;
     uint32 Summon_Timer;
+    uint32 SecondPhase_Timer;
+    uint32 Teleport_Timer;
+
+    float LastX, LastY, LastZ;
 
     void Reset()
     {
+        isTeleported = false;
+        SecondPhaseCounter = 0;
         Blink_Timer = 25000;
         Curse_Timer = 4000;
-        Summon_Timer = 12000;
+        Summon_Timer = 30000;
+        SecondPhase_Timer = 17000;
+        Teleport_Timer = 120000;
+
+        LastX = 0;
+        LastY = 0;
+        LastZ = 0;
+
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NOTH, NOT_STARTED);
     }
 
     void Aggro(Unit *who)
@@ -100,6 +124,30 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
             case 0: DoScriptText(SAY_AGGRO1, m_creature); break;
             case 1: DoScriptText(SAY_AGGRO2, m_creature); break;
             case 2: DoScriptText(SAY_AGGRO3, m_creature); break;
+        }
+
+        if (!who || m_creature->getVictim())
+            return;
+
+        if (who->isTargetableForAttack() && who->isInAccessablePlaceFor(m_creature) && m_creature->IsHostileTo(who))
+            AttackStart(who);
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NOTH, IN_PROGRESS);
+    }
+
+    void AttackStart(Unit* who)
+    {
+        if (isTeleported)
+            return;
+
+        if (!who || who == m_creature)
+            return;
+
+        if (m_creature->Attack(who, true))
+        {
+            m_creature->SetInCombatWithZone();
+            DoStartMovement(who);
         }
     }
 
@@ -121,19 +169,59 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if(m_pInstance)
+            m_pInstance->SetData(TYPE_NOTH, DONE);
     }
 
     void UpdateAI(const uint32 diff)
     {
+        if (isTeleported)
+        {
+            if (Teleport_Timer < diff)
+            {
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+                m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                m_creature->GetMap()->CreatureRelocation(m_creature, LastX, LastY, LastZ, 0);
+                m_creature->SendMonsterMove(LastX, LastY, LastZ, 0, MONSTER_MOVE_NONE, 0);
+                LastX = 0;
+                LastY = 0;
+                LastZ = 0;
+                isTeleported = false;
+                Teleport_Timer = 120000;
+            }else Teleport_Timer -= diff;
+
+            if (SecondPhase_Timer < diff)
+            {
+                switch (SecondPhaseCounter)
+                {
+                    case 0:
+                        for(uint8 i = 0; i < (m_bIsHeroicMode ? 4 : 2); i++)
+                            m_creature->SummonCreature(NPC_PLAGUED_CHAMPIONS,2684.804,-3502.517,261.313,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,80000);
+                        break;
+                    case 1:
+                    case 2:
+                        for(uint8 i = 0; i < (m_bIsHeroicMode ? 4 : 2) - (m_bIsHeroicMode ? 2 : 1); i++)
+                            m_creature->SummonCreature(NPC_PLAGUED_CHAMPIONS,2684.804,-3502.517,261.313,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,80000);
+                        for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
+                            m_creature->SummonCreature(NPC_PLAGUED_GUARDIANS,2684.804,-3502.517,261.313,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,80000);
+                        break;
+                }
+                SecondPhaseCounter ++;
+                SecondPhase_Timer = 22000;
+            } else SecondPhase_Timer -= diff;
+            return;
+        }
+
         if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
             return;
 
         //Blink_Timer
         if (Blink_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CRIPPLE);
+            DoCast(m_creature->getVictim(), m_bIsHeroicMode ? SPELL_CRIPPLE_H : SPELL_CRIPPLE);
             DoCast(m_creature,SPELL_BLINK);
-
+            //m_creature->DeleteThreatList();
             Blink_Timer = 25000;
         }else Blink_Timer -= diff;
 
@@ -149,11 +237,32 @@ struct MANGOS_DLL_DECL boss_nothAI : public ScriptedAI
         {
             DoScriptText(SAY_SUMMON, m_creature);
 
-            for(uint8 i = 0; i < 6; i++)
+            for(uint8 i = 0; i < (m_bIsHeroicMode ? 3 : 2); i++)
                 m_creature->SummonCreature(NPC_PLAGUED_WARRIOR,2684.804,-3502.517,261.313,0,TEMPSUMMON_TIMED_OR_DEAD_DESPAWN,80000);
 
-            Summon_Timer = 30500;
+            Summon_Timer = 30000;
         } else Summon_Timer -= diff;
+
+        if (Teleport_Timer < diff)
+        {
+            LastX = m_creature->GetPositionX();
+            LastY = m_creature->GetPositionY();
+            LastZ = m_creature->GetPositionZ();
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+            m_creature->RemoveAllAuras();
+            m_creature->InterruptNonMeleeSpells(true);
+            m_creature->GetMotionMaster()->Clear(false);
+            m_creature->StopMoving();
+            m_creature->AttackStop();
+            m_creature->GetMap()->CreatureRelocation(m_creature, TELE_X, TELE_Y, TELE_Z, TELE_O);
+            m_creature->SendMonsterMove(TELE_X, TELE_Y, TELE_Z, TELE_O, MONSTER_MOVE_NONE, 0);
+            isTeleported = true;
+            SecondPhaseCounter = 0;
+            SecondPhase_Timer = 0;
+            Teleport_Timer = 70000;
+            return;
+        }else Teleport_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

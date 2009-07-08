@@ -16,12 +16,14 @@
 
 /* ScriptData
 SDName: Boss_Gothik
+SDAuthor: ckegg
 SD%Complete: 0
-SDComment: Placeholder
+SDComment: Center gate.........?
 SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_naxxramas.h"
 
 #define SAY_SPEECH                  -1533040
 #define SAY_KILL                    -1533041
@@ -62,3 +64,252 @@ EndScriptData */
 
 //Spectral Horse
 #define SPELL_STOMP                 27993
+
+#define MOB_LIVE_TRAINEE    16124
+#define MOB_LIVE_KNIGHT     16125
+#define MOB_LIVE_RIDER      16126
+#define MOB_DEAD_TRAINEE    16127
+#define MOB_DEAD_KNIGHT     16148
+#define MOB_DEAD_RIDER      16150
+#define MOB_DEAD_HORSE      16149
+
+#define POS_LIVE 3
+#define POS_DEAD 5
+
+const struct Waves { uint32 entry, number, time; }
+waves[] =
+{
+    {MOB_LIVE_TRAINEE, 2, 20000},
+    {MOB_LIVE_TRAINEE, 2, 20000},
+    {MOB_LIVE_TRAINEE, 2, 10000},
+    {MOB_LIVE_KNIGHT,  1, 10000}, // 60
+    {MOB_LIVE_TRAINEE, 2, 15000},
+    {MOB_LIVE_KNIGHT,  1, 10000},
+    {MOB_LIVE_TRAINEE, 2, 15000},
+    {MOB_LIVE_TRAINEE, 2, 0},
+    {MOB_LIVE_KNIGHT,  1, 10000},
+    {MOB_LIVE_RIDER,   1, 10000}, // 120
+    {MOB_LIVE_TRAINEE, 2, 5000},
+    {MOB_LIVE_KNIGHT,  1, 15000},
+    {MOB_LIVE_TRAINEE, 2, 0},
+    {MOB_LIVE_RIDER,   1, 10000},
+    {MOB_LIVE_KNIGHT,  1, 10000},
+    {MOB_LIVE_TRAINEE, 2, 10000},
+    {MOB_LIVE_RIDER,   1, 5000},
+    {MOB_LIVE_KNIGHT,  1, 5000},  // 180
+    {MOB_LIVE_TRAINEE, 2, 20000},
+    {MOB_LIVE_TRAINEE, 2, 0},
+    {MOB_LIVE_KNIGHT,  1, 0},
+    {MOB_LIVE_RIDER,   1, 15000},
+    {MOB_LIVE_TRAINEE, 2, 29000}, // 244
+    {0, 0, 0},
+};
+
+const float PosSummonLive[POS_LIVE][3] =
+{
+    {2669.7, -3430.9, 268.56},
+    {2692.0, -3430.9, 268.56},
+    {2714.1, -3430.9, 268.56},
+};
+
+const float PosSummonDead[POS_DEAD][3] =
+{
+    {2725.1, -3310.0, 268.85},
+    {2699.3, -3322.8, 268.60},
+    {2733.1, -3348.5, 268.84},
+    {2682.8, -3304.2, 268.85},
+    {2664.8, -3340.7, 268.23},
+};
+
+const float PosPlatform[4] = {2640.5, -3360.6, 285.26, 0};
+const float PosGroundLive[4] = {2692.174, -3400.963, 267.680, 1.7};
+const float PosGroundDeath[4] = {2690.378, -3328.279, 267.681, 1.7};
+
+struct MANGOS_DLL_DECL boss_gothikAI : public Scripted_NoMovementAI
+{
+    boss_gothikAI(Creature* pCreature) : Scripted_NoMovementAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+    bool m_bIsHeroicMode;
+    bool SummonPhase;
+    bool BlinkPhase;
+
+    std::list<uint64> SummonsList;
+
+    uint32 waveCount;
+    uint32 Summon_Timer;
+    uint32 SummonDeathCheck_Timer;
+    uint32 HarvestSoul_Timer;
+    uint32 ShadowBolt_Timer;
+    uint32 Blink_Timer;
+
+    void Reset()
+    {
+        SummonPhase = false;
+        BlinkPhase = false;
+
+        SummonsList.clear();
+
+        waveCount = 0;
+        Summon_Timer = 10000;
+        SummonDeathCheck_Timer = 1000;
+        HarvestSoul_Timer = 15000;
+        ShadowBolt_Timer = 1000;
+        Blink_Timer = 30000;
+
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_GOTHIK, NOT_STARTED);
+    }
+
+    void EnterCombat(Unit *who)
+    {
+        DoScriptText(SAY_SPEECH, m_creature);
+
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->GetMap()->CreatureRelocation(m_creature, PosPlatform[0], PosPlatform[1], PosPlatform[2], PosPlatform[3]);
+        m_creature->SetInCombatWithZone();
+
+        if (m_pInstance)
+        {
+            m_pInstance->SetData(TYPE_GOTHIK, IN_PROGRESS);
+
+            if (GameObject* pGate = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(DATA_GOTHIK_GATE)))
+                pGate->SetGoState(GO_STATE_READY);
+        }
+    }
+
+    void KilledUnit(Unit* victim)
+    {
+        if(!(rand()%5))
+            DoScriptText(SAY_KILL, m_creature);
+    }
+
+    void JustDied(Unit* Killer)
+    {
+        DoScriptText(SAY_DEATH, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_GOTHIK, DONE);
+    }
+
+    void JustSummoned(Creature* pSummon)
+    {
+        pSummon->AI()->AttackStart(SelectUnit(SELECT_TARGET_RANDOM,0));
+    }
+
+    void UpdateAI(const uint32 diff)
+    {
+        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+            return;
+
+        if (SummonPhase)
+        {
+            if (HarvestSoul_Timer < diff)
+            {
+                DoCast(m_creature->getVictim(), SPELL_HARVESTSOUL);
+                HarvestSoul_Timer = 15000 + rand()%1000;
+            }else HarvestSoul_Timer -= diff;
+
+            if (ShadowBolt_Timer < diff)
+            {
+                DoCast(m_creature->getVictim(), m_bIsHeroicMode ? H_SPELL_SHADOWBOLT : SPELL_SHADOWBOLT);
+                ShadowBolt_Timer = 1000 + rand()%500;
+            }else ShadowBolt_Timer -= diff;
+
+            if (Blink_Timer < diff)
+            {
+                if (BlinkPhase)
+                {
+                    m_creature->GetMap()->CreatureRelocation(m_creature, PosGroundLive[0], PosGroundLive[1], PosGroundLive[2], 0.0f);
+                    BlinkPhase = false;
+                }
+                else
+                {
+                    m_creature->GetMap()->CreatureRelocation(m_creature, PosGroundDeath[0], PosGroundDeath[1], PosGroundDeath[2], 0.0f);
+                    BlinkPhase = true;
+                }
+                Blink_Timer = 15000;
+            }else Blink_Timer -= diff;
+        }
+        else
+        {
+            if (Summon_Timer < diff)
+            {
+                if(waves[waveCount].entry)
+                {
+                    for(uint32 i = 0; i < waves[waveCount].number; ++i)
+                    {
+                        uint8 SummonLoc = rand()%POS_LIVE;
+                        if (Creature* pTemp = m_creature->SummonCreature(waves[waveCount].entry, PosSummonLive[SummonLoc][0], PosSummonLive[SummonLoc][1], PosSummonLive[SummonLoc][2], 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+                            SummonsList.push_back(pTemp->GetGUID());
+                    }
+                    Summon_Timer = waves[waveCount].time;
+                    ++waveCount;
+                }
+                else
+                {
+                    DoScriptText(SAY_TELEPORT, m_creature);
+                    uint8 SummonLoc = rand()%POS_LIVE;
+                    m_creature->GetMap()->CreatureRelocation(m_creature, PosSummonLive[SummonLoc][0], PosSummonLive[SummonLoc][1], PosSummonLive[SummonLoc][2], 0.0f);
+                    m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+
+                    SummonPhase = true;
+                }
+            }else Summon_Timer -= diff;
+        }
+
+        if (SummonDeathCheck_Timer < diff)
+        {
+            if (!SummonsList.empty())
+            {
+                for(std::list<uint64>::iterator itr = SummonsList.begin(); itr != SummonsList.end(); ++itr)
+                {
+                    if (Creature* pTemp = ((Creature*)Unit::GetUnit(*m_creature, *itr)))
+                    {
+                        if (!pTemp->isAlive())
+                        {
+                            uint8 SummonLoc = rand()%POS_DEAD;
+                            if (pTemp->GetEntry() == MOB_LIVE_TRAINEE)
+                                m_creature->SummonCreature(MOB_DEAD_TRAINEE, PosSummonDead[SummonLoc][0], PosSummonDead[SummonLoc][1], PosSummonDead[SummonLoc][2], 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                            else if (pTemp->GetEntry() == MOB_LIVE_KNIGHT)
+                                m_creature->SummonCreature(MOB_DEAD_KNIGHT, PosSummonDead[SummonLoc][0], PosSummonDead[SummonLoc][1], PosSummonDead[SummonLoc][2], 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                            else if (pTemp->GetEntry() == MOB_LIVE_RIDER)
+                            {
+                                m_creature->SummonCreature(MOB_DEAD_RIDER, PosSummonDead[SummonLoc][0], PosSummonDead[SummonLoc][1], PosSummonDead[SummonLoc][2], 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                                m_creature->SummonCreature(MOB_DEAD_HORSE, PosSummonDead[SummonLoc][0], PosSummonDead[SummonLoc][1], PosSummonDead[SummonLoc][2], 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000);
+                            }
+
+                            if (m_pInstance)
+                                if (GameObject* pGate = m_pInstance->instance->GetGameObject(m_pInstance->GetData64(DATA_GOTHIK_GATE)))
+                                    pGate->SetGoState(GO_STATE_ACTIVE);
+                            SummonsList.remove(pTemp->GetGUID());
+                            break;
+                        }
+                    }
+                }
+            }
+            SummonDeathCheck_Timer = 1000;
+        }else SummonDeathCheck_Timer -= diff;
+    }
+};
+
+CreatureAI* GetAI_boss_gothik(Creature* pCreature)
+{
+    return new boss_gothikAI(pCreature);
+}
+
+void AddSC_boss_gothik()
+{
+    Script *newscript;
+    newscript = new Script;
+    newscript->Name = "boss_gothik";
+    newscript->GetAI = &GetAI_boss_gothik;
+    newscript->RegisterSelf();
+}

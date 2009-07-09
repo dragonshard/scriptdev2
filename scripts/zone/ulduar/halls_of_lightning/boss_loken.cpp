@@ -136,7 +136,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
                             if (m_fDist <= 1.0f) // Less than 1 yard
                                 dmg = (m_bIsHeroic ? 850 : 800); // need to correct damage
                             else // Further from 1 yard
-                                dmg = roundf((m_bIsHeroic ? 250 : 200) * m_fDist) + (m_bIsHeroic ? 850 : 800); // need to correct damage
+                                dmg = int32((m_bIsHeroic ? 250 : 200) * m_fDist) + (m_bIsHeroic ? 850 : 800); // need to correct damage
 
                             m_creature->CastCustomSpell(i->getSource(), (m_bIsHeroic ? 59837 : 52942), &dmg, 0, 0, false);
                         }

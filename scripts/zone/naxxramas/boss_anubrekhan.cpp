@@ -81,7 +81,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         Impale_Timer = 15000;                               //15 seconds
         LocustSwarm_Timer = 80000 + (rand()%40000);         //Random time between 80 seconds and 2 minutes for initial cast
         Summon_Timer = LocustSwarm_Timer + 20000;           //45 seconds after initial locust swarm
-        Berserk_Timer = 300000;
+        Berserk_Timer = 600000;
 
         for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
         {
@@ -202,7 +202,7 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000))
                     pTemp->SetInCombatWithZone();
-            Summon_Timer = 20000;
+            Summon_Timer = 40000;
         }else Summon_Timer -= diff;
 
         DoMeleeAttackIfReady();

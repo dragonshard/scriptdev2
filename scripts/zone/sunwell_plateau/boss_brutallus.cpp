@@ -74,11 +74,16 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
         BurnTimer = 60000;
         BerserkTimer = 360000;
         LoveTimer = 10000 + rand()%7000;
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_BRUTALLUS, NOT_STARTED);
     }
 
     void Aggro(Unit *who)
     {
         DoScriptText(YELL_AGGRO, m_creature);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_BRUTALLUS, IN_PROGRESS);
     }
 
     void KilledUnit(Unit* victim)
@@ -94,6 +99,8 @@ struct MANGOS_DLL_DECL boss_brutallusAI : public ScriptedAI
     void JustDied(Unit* Killer)
     {
         DoScriptText(YELL_DEATH, m_creature);
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_BRUTALLUS, DONE);
     }
 
     void UpdateAI(const uint32 diff)

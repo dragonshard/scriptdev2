@@ -12,6 +12,8 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_sunwell_plateau.h"
 
+#define ENCOUNTERS 6
+
 /* Sunwell Plateau:
 0 - Kalecgos and Sathrovarr
 1 - Brutallus
@@ -226,12 +228,12 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
                 m_uiEncounter[1] = uiData;
                 break;
             case TYPE_FELMYST:
-                m_uiEncounter[2] = uiData; 
+                m_uiEncounter[2] = uiData;
                 if (uiData == DONE)
                     DoUseDoorOrButton(m_uiDoorFireBarrierGUID);
                 break;
-            case TYPE_EREDAR_TWINS:  
-                m_uiEncounter[3] = uiData; 
+            case TYPE_EREDAR_TWINS:
+                m_uiEncounter[3] = uiData;
                 if (uiData == DONE)
                 {
                     DoUseDoorOrButton(m_uiDoorTheSecondGateGUID);

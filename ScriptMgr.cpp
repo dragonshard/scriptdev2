@@ -497,7 +497,12 @@ extern void AddSC_stratholme();
 //Sunken Temple
 
 //Sunwell Plateau
+extern void AddSC_boss_brutallus();
+extern void AddSC_boss_eredar_twins();
+extern void AddSC_boss_felmyst();
 extern void AddSC_boss_kalecgos();
+extern void AddSC_boss_Kiljaeden();
+extern void AddSC_boss_muru_entropius();
 extern void AddSC_instance_sunwell_plateau();
 
 //Tanaris
@@ -1397,7 +1402,12 @@ void ScriptsInit()
     //Sunken Temple
 
     //Sunwell Plateau
+    AddSC_boss_brutallus();
+    AddSC_boss_eredar_twins();
+    AddSC_boss_felmyst();
     AddSC_boss_kalecgos();
+    AddSC_boss_Kiljaeden();
+    AddSC_boss_muru_entropius();
     AddSC_instance_sunwell_plateau();
 
     //Tanaris

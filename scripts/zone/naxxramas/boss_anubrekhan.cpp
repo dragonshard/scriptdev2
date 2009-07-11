@@ -188,9 +188,9 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (LocustSwarm_Timer < diff)
         {
             DoCast(m_creature, m_bIsHeroicMode ? SPELL_LOCUSTSWARM_H : SPELL_LOCUSTSWARM);
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+            /*if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000))
-                    pTemp->SetInCombatWithZone();
+                    pTemp->SetInCombatWithZone();*/
             LocustSwarm_Timer = 90000 + (rand()%30000);
             Summon_Timer += 20000;
         }else LocustSwarm_Timer -= diff;

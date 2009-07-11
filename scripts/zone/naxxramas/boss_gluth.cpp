@@ -201,8 +201,8 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                         if (pTemp->isAlive())
                         {
                             ((mob_zombie_chowsAI*)pTemp->AI())->bIsForceMove = true;
-                            if (m_creature->GetHealth() > m_creature->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
-                                pTemp->SetHealth(m_creature->GetMaxHealth() * 0.05);
+                            if (pTemp->GetHealth() > pTemp->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
+                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.05);
                             pTemp->AddThreat(m_creature, 1000000000.0f); // force move toward to Gluth
                         }
             }
@@ -246,7 +246,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                     }
                 }
             }
-            Summon_Timer = 10000;
+            Summon_Timer = 20000;
         } else Summon_Timer -= diff;
 
         //m_uiBerserkTimer

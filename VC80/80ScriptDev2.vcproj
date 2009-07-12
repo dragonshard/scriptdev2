@@ -2307,6 +2307,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\scripts\zone\sunwell_plateau\boss_muru_entropius.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\scripts\zone\sunwell_plateau\def_sunwell_plateau.h"
 						>
 					</File>

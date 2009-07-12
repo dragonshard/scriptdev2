@@ -346,6 +346,7 @@ scripts/zone/sunwell_plateau/boss_felmyst.cpp \
 scripts/zone/sunwell_plateau/boss_kalecgos.cpp \
 scripts/zone/sunwell_plateau/boss_kiljaeden.cpp \
 scripts/zone/sunwell_plateau/boss_kalecgos.cpp \
+scripts/zone/sunwell_plateau/boss_muru_entropius.cpp \
 scripts/zone/sunwell_plateau/def_sunwell_plateau.h \
 scripts/zone/sunwell_plateau/instance_sunwell_plateau.cpp \
 scripts/zone/tanaris/tanaris.cpp \

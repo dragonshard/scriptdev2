@@ -107,7 +107,6 @@ scripts/zone/blackrock_depths/boss_gorosh_the_dervish.cpp \
 scripts/zone/blackrock_depths/boss_grizzle.cpp \
 scripts/zone/blackrock_depths/boss_high_interrogator_gerstahn.cpp \
 scripts/zone/blackrock_depths/boss_magmus.cpp \
-scripts/zone/blackrock_depths/boss_moira_bronzebeard.cpp \
 scripts/zone/blackrock_depths/boss_tomb_of_seven.cpp \
 scripts/zone/blackrock_depths/def_blackrock_depths.h \
 scripts/zone/blackrock_depths/instance_blackrock_depths.cpp \
@@ -344,9 +343,9 @@ scripts/zone/sunwell_plateau/boss_brutallus.cpp \
 scripts/zone/sunwell_plateau/boss_eredar_twins.cpp \
 scripts/zone/sunwell_plateau/boss_felmyst.cpp \
 scripts/zone/sunwell_plateau/boss_kalecgos.cpp \
+scripts/zone/sunwell_plateau/boss_muru_entropius.cpp \
 scripts/zone/sunwell_plateau/boss_kiljaeden.cpp \
 scripts/zone/sunwell_plateau/boss_kalecgos.cpp \
-scripts/zone/sunwell_plateau/boss_muru_entropius.cpp \
 scripts/zone/sunwell_plateau/def_sunwell_plateau.h \
 scripts/zone/sunwell_plateau/instance_sunwell_plateau.cpp \
 scripts/zone/tanaris/tanaris.cpp \
@@ -388,6 +387,12 @@ scripts/zone/thunder_bluff/thunder_bluff.cpp \
 scripts/zone/tirisfal_glades/tirisfal_glades.cpp \
 scripts/zone/uldaman/boss_ironaya.cpp \
 scripts/zone/uldaman/uldaman.cpp \
+scripts/zone/ulduar/halls_of_lightning/boss_bjarngrim.cpp \
+scripts/zone/ulduar/halls_of_lightning/boss_ionar.cpp \
+scripts/zone/ulduar/halls_of_lightning/boss_loken.cpp \
+scripts/zone/ulduar/halls_of_lightning/boss_volkhan.cpp \
+scripts/zone/ulduar/halls_of_lightning/def_halls_of_lightning.h \
+scripts/zone/ulduar/halls_of_lightning/instance_halls_of_lightning.cpp \
 scripts/zone/undercity/undercity.cpp \
 scripts/zone/utgarde_keep/utgarde_keep/boss_ingvar.cpp \
 scripts/zone/utgarde_keep/utgarde_keep/boss_keleseth.cpp \

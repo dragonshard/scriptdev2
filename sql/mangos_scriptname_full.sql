@@ -804,6 +804,7 @@ UPDATE creature_template SET ScriptName='npc_deathstalker_erland' WHERE entry=19
 
 /* STONETALON MOUNTAINS */
 UPDATE creature_template SET ScriptName='npc_braug_dimspirit' WHERE entry=4489;
+UPDATE creature_template SET ScriptName='npc_kaya' WHERE entry=11856;
 
 /* STORM PEAKS */
 
@@ -840,6 +841,7 @@ UPDATE gameobject_template SET ScriptName='go_gauntlet_gate' WHERE entry=175357;
 
 /* SUNWELL PLATEAU */
 UPDATE instance_template SET script='instance_sunwell_plateau' WHERE map=580;
+UPDATE creature_template SET ScriptName='boss_brutallus' WHERE entry=24882;
 UPDATE creature_template SET ScriptName='boss_kalecgos' WHERE entry=24850;
 UPDATE creature_template SET ScriptName='boss_kalecgos_humanoid' WHERE entry=24891;
 UPDATE creature_template SET ScriptName='boss_sathrovarr' WHERE entry=24892;
@@ -960,6 +962,15 @@ UPDATE creature_template SET ScriptName='npc_lore_keeper_of_norgannon' WHERE ent
 /*  */
 
 /* HALLS OF LIGHTNING */
+UPDATE instance_template SET script='instance_halls_of_lightning' WHERE map=602;
+UPDATE creature_template SET ScriptName='boss_bjarngrim' WHERE entry=28586;
+UPDATE creature_template SET ScriptName='mob_stormforged_lieutenant' WHERE entry=29240;
+UPDATE creature_template SET ScriptName='boss_volkhan' WHERE entry=28587;
+UPDATE creature_template SET ScriptName='mob_molten_golem' WHERE entry=28695;
+UPDATE creature_template SET ScriptName='npc_volkhan_anvil' WHERE entry=28823;
+UPDATE creature_template SET ScriptName='boss_ionar' WHERE entry=28546;
+UPDATE creature_template SET ScriptName='mob_spark_of_ionar' WHERE entry=28926;
+UPDATE creature_template SET ScriptName='boss_loken' WHERE entry=28923;
 
 /* HALLS OF STONE */
 

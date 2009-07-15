@@ -148,7 +148,6 @@ extern void AddSC_boss_gorosh_the_dervish();
 extern void AddSC_boss_grizzle();
 extern void AddSC_boss_high_interrogator_gerstahn();
 extern void AddSC_boss_magmus();
-extern void AddSC_boss_moira_bronzebeard();
 extern void AddSC_boss_tomb_of_seven();
 extern void AddSC_instance_blackrock_depths();
 
@@ -561,6 +560,13 @@ extern void AddSC_tirisfal_glades();
 //Uldaman
 extern void AddSC_boss_ironaya();
 extern void AddSC_uldaman();
+
+//Ulduar
+extern void AddSC_boss_bjarngrim();
+extern void AddSC_boss_ionar();
+extern void AddSC_boss_loken();
+extern void AddSC_boss_volkhan();
+extern void AddSC_instance_halls_of_lightning();
 
 //Undercity
 extern void AddSC_undercity();
@@ -1046,7 +1052,6 @@ void ScriptsInit()
     AddSC_boss_grizzle();
     AddSC_boss_high_interrogator_gerstahn();
     AddSC_boss_magmus();
-    AddSC_boss_moira_bronzebeard();
     AddSC_boss_tomb_of_seven();
     AddSC_instance_blackrock_depths();
 
@@ -1458,6 +1463,13 @@ void ScriptsInit()
     //Uldaman
     AddSC_boss_ironaya();
     AddSC_uldaman();
+
+    //Ulduar
+    AddSC_boss_bjarngrim();
+    AddSC_boss_ionar();
+    AddSC_boss_loken();
+    AddSC_boss_volkhan();
+    AddSC_instance_halls_of_lightning();
 
     //Undercity
     AddSC_undercity();

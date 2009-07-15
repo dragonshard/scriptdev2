@@ -346,7 +346,11 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1000354, 'Stupid grenade picked a fine time to backfire! So much for high quality goblin engineering!',0,1,0,0,'sprysprocket SAY_GRENADE_FAIL'),
 (-1000355, 'All right, you win! I surrender! Just don\'t hurt me!',0,1,0,0,'sprysprocket SAY_END'),
 
-(-1000356,'Okay, okay... gimme a minute to rest now. You gone and beat me up good.',0,0,1,14,'calvin SAY_COMPLETE');
+(-1000356,'Okay, okay... gimme a minute to rest now. You gone and beat me up good.',0,0,1,14,'calvin SAY_COMPLETE'),
+
+(-1000357,'Let\'s go before they find out I\'m free!',0,0,0,1,'KAYA_SAY_START'),
+(-1000358,'Look out! We\'re under attack!',0,0,0,0,'KAYA_AMBUSH'),
+(-1000359,'Thank you for helping me. I know my way back from here.',0,0,0,0,'KAYA_END');
 
 -- -1 033 000 SHADOWFANG KEEP
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -1871,8 +1875,55 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 -- -1 601 000 AZJOL-NERUB
 
 -- -1 602 000 HALLS OF LIGHTNING
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1602000,'I am the greatest of my father\'s sons! Your end has come!',14149,1,0,0,'bjarngrim SAY_AGGRO'),
+(-1602001,'So ends your curse!',14153,1,0,0,'bjarngrim SAY_SLAY_1'),
+(-1602002,'Flesh... is... weak!',14154,1,0,0,'bjarngrim SAY_SLAY_2'),
+(-1602003,'...',14155,1,0,0,'bjarngrim SAY_SLAY_3'),
+(-1602004,'How can it be...? Flesh is not... stronger!',14156,1,0,0,'bjarngrim SAY_DEATH'),
+(-1602005,'Defend yourself, for all the good it will do!',14151,1,0,0,'bjarngrim SAY_BATTLE_STANCE'),
+(-1602006,'switches to Battle Stance!',0,3,0,0,'bjarngrim EMOTE_BATTLE_STANCE'),
+(-1602007,'GRAAAAAH! Behold the fury of iron and steel!',14152,1,0,0,'bjarngrim SAY_BERSEKER_STANCE'),
+(-1602008,'switches to Berserker Stance!',0,3,0,0,'bjarngrim EMOTE_BERSEKER_STANCE'),
+(-1602009,'Give me your worst!',14150,1,0,0,'bjarngrim SAY_DEFENSIVE_STANCE'),
+(-1602010,'switches to Defensive Stance!',0,3,0,0,'bjarngrim EMOTE_DEFENSIVE_STANCE'),
 
--- -1 603 000 ULDUAR (RAID NIU)
+(-1602011,'You wish to confront the master? You must weather the storm!',14453,1,0,0,'ionar SAY_AGGRO'),
+(-1602012,'Shocking ... I know!',14456,1,0,0,'ionar SAY_SLAY_1'),
+(-1602013,'You atempt the unpossible.',14457,1,0,0,'ionar SAY_SLAY_2'),
+(-1602014,'Your spark of light is ... extinguish.',14458,1,0,0,'ionar SAY_SLAY_3'),
+(-1602015,'Master... you have guests.',14459,1,0,0,'ionar SAY_DEATH'),
+(-1602016,'The slightest spark shall be your undoing.',14454,1,0,0,'ionar SAY_SPLIT_1'),
+(-1602017,'No one is safe!',14455,1,0,0,'ionar SAY_SPLIT_2'),
+
+(-1602018,'What hope is there for you? None!',14162,1,0,0,'loken SAY_AGGRO0'),
+(-1602019,'I have witnessed the rise and fall of empires. The birth and extinction of entire species. Over countless millennia the foolishness of mortals has remained beyond a constant. Your presence here confirms this.',14160,1,0,0,'loken SAY_INTRO_1'),
+(-1602020,'My master has shown me the future, and you have no place in it. Azeroth will be reborn in darkness. Yogg-Saron shall be released! The Pantheon shall fall!',14162,1,0,0,'loken SAY_INTRO_2'),
+(-1602021,'Only mortal...',14166,1,0,0,'loken SAY_SLAY_1'),
+(-1602022,'I... am... FOREVER!',14167,1,0,0,'loken SAY_SLAY_2'),
+(-1602023,'What little time you had, you wasted!',14168,1,0,0,'loken SAY_SLAY_3'),
+(-1602024,'My death... heralds the end of this world.',14172,1,0,0,'loken SAY_DEATH'),
+(-1602025,'You cannot hide from fate!',14163,1,0,0,'loken SAY_NOVA_1'),
+(-1602026,'Come closer. I will make it quick.',14164,1,0,0,'loken SAY_NOVA_2'),
+(-1602027,'Your flesh cannot hold out for long.',14165,1,0,0,'loken SAY_NOVA_3'),
+(-1602028,'You stare blindly into the abyss!',14169,1,0,0,'loken SAY_75HEALTH'),
+(-1602029,'Your ignorance is profound. Can you not see where this path leads?',14170,1,0,0,'loken SAY_50HEALTH'),
+(-1602030,'You cross the precipice of oblivion!',14171,1,0,0,'loken SAY_25HEALTH'),
+(-1602031,'begins to cast Lightning Nova!',0,3,0,0,'loken EMOTE_NOVA'),
+
+(-1602032,'It is you who have destroyed my children? You... shall... pay!',13960,1,0,0,'volkhan SAY_AGGRO'),
+(-1602033,'The armies of iron will conquer all!',13965, 1,0,0,'volkhan SAY_SLAY_1'),
+(-1602034,'Ha, pathetic!',13966,1,0,0,'volkhan SAY_SLAY_2'),
+(-1602035,'You have cost me too much work!',13967,1,0,0,'volkhan SAY_SLAY_3'),
+(-1602036,'The master was right... to be concerned.',13968,1,0,0,'volkhan SAY_DEATH'),
+(-1602037,'I will crush you beneath my boots!',13963,1,0,0,'volkhan SAY_STOMP_1'),
+(-1602038,'All my work... undone!',13964,1,0,0,'volkhan SAY_STOMP_2'),
+(-1602039,'Life from the lifelessness... death for you.',13961,1,0,0,'volkhan SAY_FORGE_1'),
+(-1602040,'Nothing is wasted in the process. You will see....',13962,1,0,0,'volkhan SAY_FORGE_2'),
+(-1602041,'runs to his anvil!',0,3,0,0,'volkhan EMOTE_TO_ANVIL'),
+(-1602042,'prepares to shatter his Brittle Golems!',0,3,0,0,'volkhan EMOTE_SHATTER');
+
+-- -1 603 000 ULDUAR
 
 -- -1 604 000 GUNDRAK
 
@@ -2422,6 +2473,28 @@ INSERT INTO script_waypoint VALUES
 (10096, 3, 601.300781, -198.556992, -53.950256, 0,'ring'),
 (10096, 4, 631.818359, -180.548126, -52.654770, 0,'second gate'),
 (10096, 5, 627.390381, -201.075974, -52.692917, 0,'hiding in corner');
+
+DELETE FROM script_waypoint WHERE entry=11856;
+INSERT INTO script_waypoint VALUES
+(11856, 0, 113.91, -350.13, 4.55, 0, ''),
+(11856, 1, 109.54, -350.08, 3.74, 0, ''),
+(11856, 2, 106.95, -353.40, 3.60, 0, ''),
+(11856, 3, 100.28, -338.89, 2.97, 0, ''),
+(11856, 4, 110.11, -320.26, 3.47, 0, ''),
+(11856, 5, 109.78, -287.80, 5.30, 0, ''),
+(11856, 6, 105.02, -269.71, 4.71, 0, ''),
+(11856, 7, 86.71, -251.81, 5.34, 0, ''),
+(11856, 8, 64.10, -246.38, 5.91, 0, ''),
+(11856, 9, -2.55, -243.58, 6.3, 0, ''),
+(11856, 10, -27.78, -267.53, -1.08, 0, ''),
+(11856, 11, -31.27, -283.54, -4.36, 0, ''),
+(11856, 12, -28.96, -322.44, -9.19, 0, ''),
+(11856, 13, -35.63, -360.03, -16.59, 0, ''),
+(11856, 14, -58.30, -412.26, -30.60, 0, ''),
+(11856, 15, -58.88, -474.17, -44.54, 0, ''),
+(11856, 16, -45.92, -496.57, -46.26, 5000, 'AMBUSH'),
+(11856, 17, -40.25, -510.07, -46.05, 0, ''),
+(11856, 18, -38.88, -520.72, -46.06, 5000, 'END');
 
 DELETE FROM script_waypoint WHERE entry=12423;
 INSERT INTO script_waypoint VALUES

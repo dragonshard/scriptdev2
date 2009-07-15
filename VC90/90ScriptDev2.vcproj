@@ -1416,38 +1416,6 @@
 					</File>
 				</Filter>
 				<Filter
-					Name="Ulduar"
-					>
-					<Filter
-						Name="Halls of Lightning"
-						>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\boss_bjarngrim.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\boss_ionar.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\boss_loken.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\boss_volkhan.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\def_halls_of_lightning.h"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\zone\ulduar\halls_of_lightning\instance_halls_of_lightning.cpp"
-							>
-						</File>
-					</Filter>
-				</Filter>
-				<Filter
 					Name="Un&apos;Goro Crater"
 					>
 				</Filter>

@@ -360,7 +360,7 @@ struct MANGOS_DLL_DECL npc_thrall_old_hillsbradAI : public npc_escortAI
                 if (uint64 TarethaGUID = m_pInstance->GetData64(DATA_TARETHA))
                 {
                     if (Creature* Taretha = ((Creature*)Unit::GetUnit(*m_creature, TarethaGUID)))
-                        ((npc_escortAI*)(Taretha->AI()))->Start(false, false, true, PlayerGUID);
+                        ((npc_escortAI*)(Taretha->AI()))->Start(false, true, PlayerGUID);
                 }
 
                 //kill credit creature for quest
@@ -561,7 +561,9 @@ bool GossipSelect_npc_thrall_old_hillsbrad(Player* pPlayer, Creature* pCreature,
 
             DoScriptText(SAY_TH_START_EVENT_PART1, pCreature);
 
-            ((npc_escortAI*)(pCreature->AI()))->Start(true, true, true, pPlayer->GetGUID());
+            if (npc_thrall_old_hillsbradAI* pEscortAI = dynamic_cast<npc_thrall_old_hillsbradAI*>(pCreature->AI()))
+                pEscortAI->Start(true, true, pPlayer->GetGUID());
+
             break;
 
         case GOSSIP_ACTION_INFO_DEF+2:

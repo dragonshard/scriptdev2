@@ -622,8 +622,11 @@ bool GossipSelect_npc_death_knight_initiate(Player* pPlayer, Creature* pCreature
     {
         pPlayer->CLOSE_GOSSIP_MENU();
 
-        if (((npc_death_knight_initiateAI*)pCreature)->m_bIsDuelInProgress)
-            return true;
+        if (npc_death_knight_initiateAI* pInitiateAI = dynamic_cast<npc_death_knight_initiateAI*>(pCreature->AI()))
+        {
+            if (pInitiateAI->m_bIsDuelInProgress)
+                return true;
+        }
 
         pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_15);
 
@@ -815,7 +818,9 @@ bool QuestAccept_npc_koltira_deathweaver(Player* pPlayer, Creature* pCreature, c
     if (pQuest->GetQuestId() == QUEST_BREAKOUT)
     {
         pCreature->SetStandState(UNIT_STAND_STATE_STAND);
-        ((npc_escortAI*)(pCreature->AI()))->Start(false, true, false, pPlayer->GetGUID());
+
+        if (npc_koltira_deathweaverAI* pEscortAI = dynamic_cast<npc_koltira_deathweaverAI*>(pCreature->AI()))
+            pEscortAI->Start(false, false, pPlayer->GetGUID(), pQuest);
     }
     return true;
 }

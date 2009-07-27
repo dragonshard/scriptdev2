@@ -24,8 +24,6 @@ EndScriptData */
 #include "precompiled.h"
 #include "def_karazhan.h"
 
-#define ENCOUNTERS      12
-
 /*
 0  - Attumen + Midnight (optional)
 1  - Moroes
@@ -45,8 +43,8 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
 {
     instance_karazhan(Map* pMap) : ScriptedInstance(pMap) {Initialize();}
 
-    uint32 m_auiEncounter[ENCOUNTERS];
-    std::string strSaveData;
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
+    std::string strInstData;
 
     uint32 m_uiOperaEvent;
     uint32 m_uiOzDeathCount;
@@ -67,8 +65,7 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
 
     void Initialize()
     {
-        for (uint8 i = 0; i < ENCOUNTERS; ++i)
-            m_auiEncounter[i] = NOT_STARTED;
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         // 1 - OZ, 2 - HOOD, 3 - RAJ, this never gets altered.
         m_uiOperaEvent          = urand(EVENT_OZ,EVENT_RAJ);
@@ -93,7 +90,7 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
 
     bool IsEncounterInProgress() const
     {
-        for (uint8 i = 0; i < ENCOUNTERS; ++i)
+        for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
             if (m_auiEncounter[i] == IN_PROGRESS)
                 return true;
 
@@ -194,7 +191,7 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
                 << m_auiEncounter[6] << " " << m_auiEncounter[7] << " " << m_auiEncounter[8] << " "
                 << m_auiEncounter[9] << " " << m_auiEncounter[10] << " " << m_auiEncounter[11];
 
-            strSaveData = saveStream.str();
+            strInstData = saveStream.str();
 
             SaveToDB();
             OUT_SAVE_INST_DATA_COMPLETE;
@@ -203,12 +200,12 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
 
     const char* Save()
     {
-        return strSaveData.c_str();
+        return strInstData.c_str();
     }
 
-    uint32 GetData(uint32 uiData)
+    uint32 GetData(uint32 uiType)
     {
-        switch (uiData)
+        switch (uiType)
         {
             case TYPE_ATTUMEN:              return m_auiEncounter[0];
             case TYPE_MOROES:               return m_auiEncounter[1];
@@ -266,7 +263,7 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
             >> m_auiEncounter[4] >> m_auiEncounter[5] >> m_auiEncounter[6] >> m_auiEncounter[7]
             >> m_auiEncounter[8] >> m_auiEncounter[9] >> m_auiEncounter[10] >> m_auiEncounter[11];
 
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
             if (m_auiEncounter[i] == IN_PROGRESS)           // Do not load an encounter as "In Progress" - reset it instead.
                 m_auiEncounter[i] = NOT_STARTED;
 

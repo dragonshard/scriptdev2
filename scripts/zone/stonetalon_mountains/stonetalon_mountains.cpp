@@ -86,19 +86,9 @@ enum
 
 struct MANGOS_DLL_DECL npc_kayaAI : public npc_escortAI
 {
-    npc_kayaAI(Creature* pCreature) : npc_escortAI(pCreature)
-    {
-        uiNormFaction = pCreature->getFaction();
-        Reset();
-    }
+    npc_kayaAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
 
-    uint32 uiNormFaction;
-
-    void Reset()
-    {
-        if (!IsBeingEscorted)
-            m_creature->setFaction(uiNormFaction);
-    }
+    void Reset() { }
 
     void JustSummoned(Creature* pSummoned)
     {
@@ -130,21 +120,6 @@ struct MANGOS_DLL_DECL npc_kayaAI : public npc_escortAI
                 break;
         }
     }
-
-    void JustDied(Unit* pKiller)
-    {
-        if (Unit* pPlayer = Unit::GetUnit((*m_creature), PlayerGUID))
-        {
-            // If NPC dies, player fails the quest
-            if (pPlayer->GetTypeId() == TYPEID_PLAYER && ((Player*)pPlayer)->GetQuestStatus(QUEST_PROTECT_KAYA) == QUEST_STATUS_INCOMPLETE)
-                ((Player*)pPlayer)->FailQuest(QUEST_PROTECT_KAYA);
-        }
-    }
-
-    void UpdateAI(const uint32 uiDiff)
-    {
-        npc_escortAI::UpdateAI(uiDiff);
-    }
 };
 
 CreatureAI* GetAI_npc_kaya(Creature* pCreature)
@@ -162,9 +137,11 @@ bool QuestAccept_npc_kaya(Player* pPlayer, Creature* pCreature, Quest const* pQu
 
     if (pQuest->GetQuestId() == QUEST_PROTECT_KAYA)
     {
-        ((npc_escortAI*)(pCreature->AI()))->Start(true, true, false, pPlayer->GetGUID());
         pCreature->setFaction(FACTION_ESCORTEE_H);
         DoScriptText(SAY_START,pCreature);
+
+        if (npc_kayaAI* pEscortAI = dynamic_cast<npc_kayaAI*>(pCreature->AI()))
+            pEscortAI->Start(true, false, pPlayer->GetGUID(), pQuest);
     }
     return true;
 }

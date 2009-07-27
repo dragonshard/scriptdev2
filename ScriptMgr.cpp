@@ -312,6 +312,8 @@ extern void AddSC_hellfire_peninsula();
 
 //Hillsbrad Foothills
 //Hinterlands
+extern void AddSC_hinterlands();
+
 //Ironforge
 extern void AddSC_ironforge();
 
@@ -889,7 +891,7 @@ void ScriptsFree()
     delete []SpellSummary;
 
     // Free resources before library unload
-    for(int i=0;i<MAX_SCRIPTS;i++)
+    for(int i=0; i<MAX_SCRIPTS; ++i)
         delete m_scripts[i];
 
     num_sc_scripts = 0;
@@ -935,7 +937,7 @@ void ScriptsInit()
     bar.step();
     outstring_log("");
 
-    for(int i=0;i<MAX_SCRIPTS;i++)
+    for(int i=0; i<MAX_SCRIPTS; ++i)
         m_scripts[i]=NULL;
 
     FillSpellSummary();
@@ -1215,6 +1217,8 @@ void ScriptsInit()
 
     //Hillsbrad Foothills
     //Hinterlands
+    AddSC_hinterlands();
+
     //Ironforge
     AddSC_ironforge();
 

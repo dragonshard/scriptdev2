@@ -52,22 +52,18 @@ enum
 
 struct MANGOS_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
 {
-    npc_professor_phizzlethorpeAI(Creature* pCreature) : npc_escortAI(pCreature)
-    {
-        normFaction = pCreature->getFaction();
-        Reset();
-    }
+    npc_professor_phizzlethorpeAI(Creature* pCreature) : npc_escortAI(pCreature) { Reset(); }
 
-    uint32 normFaction;
+    void Reset() { }
 
-    void WaypointReached(uint32 i)
+    void WaypointReached(uint32 uiPointId)
     {
         Unit* pUnit = Unit::GetUnit((*m_creature), PlayerGUID);
 
         if (!pUnit || pUnit->GetTypeId() != TYPEID_PLAYER)
             return;
 
-        switch(i)
+        switch(uiPointId)
         {
             case 4: DoScriptText(SAY_PROGRESS_2, m_creature, pUnit); break;
             case 5: DoScriptText(SAY_PROGRESS_3, m_creature, pUnit); break;
@@ -77,7 +73,10 @@ struct MANGOS_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
                 m_creature->SummonCreature(ENTRY_VENGEFUL_SURGE, -2050.17, -2140.02, 19.54, 5.17, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 600000);
                 break;
             case 10: DoScriptText(SAY_PROGRESS_5, m_creature, pUnit); break;
-            case 11: DoScriptText(SAY_PROGRESS_6, m_creature, pUnit); break;
+            case 11:
+                DoScriptText(SAY_PROGRESS_6, m_creature, pUnit);
+                SetRun();
+                break;
             case 19: DoScriptText(SAY_PROGRESS_7, m_creature, pUnit); break;
             case 20:
                 DoScriptText(EMOTE_PROGRESS_8, m_creature);
@@ -87,37 +86,14 @@ struct MANGOS_DLL_DECL npc_professor_phizzlethorpeAI : public npc_escortAI
         }
     }
 
-    void Reset()
+    void Aggro(Unit* pWho)
     {
-        if (!IsBeingEscorted)
-            m_creature->setFaction(normFaction);
+        DoScriptText(SAY_AGGRO, m_creature);
     }
 
-    void Aggro(Unit* who)
+    void JustSummoned(Creature* pSummoned)
     {
-        DoScriptText(SAY_AGGRO, m_creature, NULL);
-    }
-
-    void JustSummoned(Creature *summoned)
-    {
-        summoned->AI()->AttackStart(m_creature);
-    }
-
-    void JustDied(Unit* killer)
-    {
-        if (IsBeingEscorted)
-        {
-            if (Unit* pUnit = Unit::GetUnit((*m_creature), PlayerGUID))
-            {
-                if (pUnit->GetTypeId() == TYPEID_PLAYER)
-                    ((Player*)pUnit)->FailQuest(QUEST_SUNKEN_TREASURE);
-            }
-        }
-    }
-
-    void UpdateAI(const uint32 diff)
-    {
-        npc_escortAI::UpdateAI(diff);
+        pSummoned->AI()->AttackStart(m_creature);
     }
 };
 
@@ -127,7 +103,9 @@ bool QuestAccept_npc_professor_phizzlethorpe(Player* pPlayer, Creature* pCreatur
     {
         pCreature->setFaction(FACTION_ESCORTEE);
         DoScriptText(SAY_PROGRESS_1, pCreature, pPlayer);
-        ((npc_escortAI*)(pCreature->AI()))->Start(false, true, false, pPlayer->GetGUID());
+
+        if (npc_professor_phizzlethorpeAI* pEscortAI = dynamic_cast<npc_professor_phizzlethorpeAI*>(pCreature->AI()))
+            pEscortAI->Start(false, false, pPlayer->GetGUID(), pQuest, true);
     }
     return true;
 }

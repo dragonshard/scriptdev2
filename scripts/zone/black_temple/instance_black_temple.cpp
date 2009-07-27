@@ -40,7 +40,7 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 {
     instance_black_temple(Map* pMap) : ScriptedInstance(pMap) {Initialize();};
 
-    uint32 m_uiEncounter[ENCOUNTERS];
+    uint32 m_auiEncounter[MAX_ENCOUNTER];
     std::string strInstData;
 
     uint64 m_uiNajentusGUID;
@@ -58,6 +58,7 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 
     uint64 m_uiNajentusGateGUID;
     uint64 m_uiMainTempleDoorsGUID;
+    uint64 m_uiShadeAkamaDoorGUID;
     uint64 m_uiIllidanGateGUID;
     uint64 m_uiIllidanDoorGUID[2];
     uint64 m_uiShahrazPreDoorGUID;
@@ -66,6 +67,8 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 
     void Initialize()
     {
+        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+
         m_uiNajentusGUID = 0;
         m_uiAkamaGUID = 0;
         m_uiAkama_ShadeGUID = 0;
@@ -81,21 +84,19 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 
         m_uiNajentusGateGUID    = 0;
         m_uiMainTempleDoorsGUID = 0;
+        m_uiShadeAkamaDoorGUID  = 0;
         m_uiIllidanGateGUID     = 0;
         m_uiIllidanDoorGUID[0]  = 0;
         m_uiIllidanDoorGUID[1]  = 0;
         m_uiShahrazPreDoorGUID  = 0;
         m_uiShahrazPostDoorGUID = 0;
         m_uiCouncilDoorGUID     = 0;
-
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            m_uiEncounter[i] = NOT_STARTED;
     }
 
     bool IsEncounterInProgress() const
     {
-        for(uint8 i = 0; i < ENCOUNTERS; i++)
-            if (m_uiEncounter[i] == IN_PROGRESS) return true;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS) return true;
 
         return false;
     }
@@ -125,13 +126,16 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
         {
             case 185483:                                    // Gate past Naj'entus (at the entrance to Supermoose's courtyards)
                 m_uiNajentusGateGUID = pGo->GetGUID();
-                if (m_uiEncounter[0] == DONE)
+                if (m_auiEncounter[0] == DONE)
                     pGo->SetGoState(GO_STATE_ACTIVE);
                 break;
             case 185882:                                    // Main Temple Doors - right past Supermoose (Supremus)
                 m_uiMainTempleDoorsGUID = pGo->GetGUID();
-                if (m_uiEncounter[1] == DONE)
+                if (m_auiEncounter[1] == DONE)
                     pGo->SetGoState(GO_STATE_ACTIVE);
+                break;
+            case 185478:
+                m_uiShadeAkamaDoorGUID = pGo->GetGUID();    // Door close during encounter
                 break;
             case 185479:                                    // Door leading to Mother Shahraz
                 m_uiShahrazPreDoorGUID = pGo->GetGUID();
@@ -140,12 +144,12 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
                 break;
             case 185481:                                    // Door leading to the Council (grand promenade)
                 m_uiCouncilDoorGUID = pGo->GetGUID();
-                if (m_uiEncounter[6] == DONE)
+                if (m_auiEncounter[6] == DONE)
                     pGo->SetGoState(GO_STATE_ACTIVE);
                 break;
             case 185482:                                    // Door after shahraz
                 m_uiShahrazPostDoorGUID = pGo->GetGUID();
-                if (m_uiEncounter[6] == DONE)
+                if (m_auiEncounter[6] == DONE)
                     pGo->SetGoState(GO_STATE_ACTIVE);
                 break;
             case 185905:                                    // Gate leading to Temple Summit
@@ -162,13 +166,13 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 
     bool CanPreMotherDoorOpen()
     {
-        if (m_uiEncounter[2] == DONE && m_uiEncounter[3] == DONE && m_uiEncounter[4] == DONE && m_uiEncounter[5] == DONE)
+        if (m_auiEncounter[2] == DONE && m_auiEncounter[3] == DONE && m_auiEncounter[4] == DONE && m_auiEncounter[5] == DONE)
         {
             debug_log("SD2: Black Temple: door to Mother Shahraz can open");
             return true;
         }
 
-        debug_log("SD2: Black Temple: Door data to Mother Shahraz requested, cannot open yet (Encounter data: %u %u %u %u)",m_uiEncounter[2],m_uiEncounter[3],m_uiEncounter[4],m_uiEncounter[5]);
+        debug_log("SD2: Black Temple: Door data to Mother Shahraz requested, cannot open yet (Encounter data: %u %u %u %u)",m_auiEncounter[2],m_auiEncounter[3],m_auiEncounter[4],m_auiEncounter[5]);
         return false;
     }
 
@@ -179,32 +183,32 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
         switch(uiType)
         {
             case TYPE_NAJENTUS:
-                m_uiEncounter[0] = uiData;
+                m_auiEncounter[0] = uiData;
                 if (uiData == DONE)
                     DoUseDoorOrButton(m_uiNajentusGateGUID);
                 break;
             case TYPE_SUPREMUS:
-                m_uiEncounter[1] = uiData;
+                m_auiEncounter[1] = uiData;
                 if (uiData == DONE)
                     DoUseDoorOrButton(m_uiMainTempleDoorsGUID);
                 break;
             case TYPE_SHADE:
-                m_uiEncounter[2] = uiData;
+                m_auiEncounter[2] = uiData;
                 if (uiData == DONE && CanPreMotherDoorOpen())
                     DoUseDoorOrButton(m_uiShahrazPreDoorGUID);
                 break;
             case TYPE_GOREFIEND:
-                m_uiEncounter[3] = uiData;
+                m_auiEncounter[3] = uiData;
                 if (uiData == DONE && CanPreMotherDoorOpen())
                     DoUseDoorOrButton(m_uiShahrazPreDoorGUID);
                 break;
             case TYPE_BLOODBOIL:
-                m_uiEncounter[4] = uiData;
+                m_auiEncounter[4] = uiData;
                 if (uiData == DONE && CanPreMotherDoorOpen())
                     DoUseDoorOrButton(m_uiShahrazPreDoorGUID);
                 break;
             case TYPE_RELIQUIARY:
-                m_uiEncounter[5] = uiData;
+                m_auiEncounter[5] = uiData;
                 if (uiData == DONE && CanPreMotherDoorOpen())
                     DoUseDoorOrButton(m_uiShahrazPreDoorGUID);
                 break;
@@ -214,10 +218,10 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
                     DoUseDoorOrButton(m_uiCouncilDoorGUID);
                     DoUseDoorOrButton(m_uiShahrazPostDoorGUID);
                 }
-                m_uiEncounter[6] = uiData;
+                m_auiEncounter[6] = uiData;
                 break;
-            case TYPE_COUNCIL:    m_uiEncounter[7] = uiData; break;
-            case TYPE_ILLIDAN:    m_uiEncounter[8] = uiData; break;
+            case TYPE_COUNCIL:    m_auiEncounter[7] = uiData; break;
+            case TYPE_ILLIDAN:    m_auiEncounter[8] = uiData; break;
             default:
                 error_log("SD2: Instance Black Temple: ERROR SetData = %u for type %u does not exist/not implemented.",uiType,uiData);
                 break;
@@ -228,9 +232,9 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
             OUT_SAVE_INST_DATA;
 
             std::ostringstream saveStream;
-            saveStream << m_uiEncounter[0] << " " << m_uiEncounter[1] << " " << m_uiEncounter[2] << " "
-                << m_uiEncounter[3] << " " << m_uiEncounter[4] << " " << m_uiEncounter[5] << " "
-                << m_uiEncounter[6] << " " << m_uiEncounter[7] << " " << m_uiEncounter[8];
+            saveStream << m_auiEncounter[0] << " " << m_auiEncounter[1] << " " << m_auiEncounter[2] << " "
+                << m_auiEncounter[3] << " " << m_auiEncounter[4] << " " << m_auiEncounter[5] << " "
+                << m_auiEncounter[6] << " " << m_auiEncounter[7] << " " << m_auiEncounter[8];
 
             strInstData = saveStream.str();
 
@@ -243,15 +247,15 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
     {
         switch(uiType)
         {
-            case TYPE_NAJENTUS:   return m_uiEncounter[0];
-            case TYPE_SUPREMUS:   return m_uiEncounter[1];
-            case TYPE_SHADE:      return m_uiEncounter[2];
-            case TYPE_GOREFIEND:  return m_uiEncounter[3];
-            case TYPE_BLOODBOIL:  return m_uiEncounter[4];
-            case TYPE_RELIQUIARY: return m_uiEncounter[5];
-            case TYPE_SHAHRAZ:    return m_uiEncounter[6];
-            case TYPE_COUNCIL:    return m_uiEncounter[7];
-            case TYPE_ILLIDAN:    return m_uiEncounter[8];
+            case TYPE_NAJENTUS:   return m_auiEncounter[0];
+            case TYPE_SUPREMUS:   return m_auiEncounter[1];
+            case TYPE_SHADE:      return m_auiEncounter[2];
+            case TYPE_GOREFIEND:  return m_auiEncounter[3];
+            case TYPE_BLOODBOIL:  return m_auiEncounter[4];
+            case TYPE_RELIQUIARY: return m_auiEncounter[5];
+            case TYPE_SHAHRAZ:    return m_auiEncounter[6];
+            case TYPE_COUNCIL:    return m_auiEncounter[7];
+            case TYPE_ILLIDAN:    return m_auiEncounter[8];
         }
 
         return 0;
@@ -302,12 +306,12 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
         OUT_LOAD_INST_DATA(chrIn);
 
         std::istringstream loadStream(chrIn);
-        loadStream >> m_uiEncounter[0] >> m_uiEncounter[1] >> m_uiEncounter[2] >> m_uiEncounter[3]
-            >> m_uiEncounter[4] >> m_uiEncounter[5] >> m_uiEncounter[6] >> m_uiEncounter[7] >> m_uiEncounter[8];
+        loadStream >> m_auiEncounter[0] >> m_auiEncounter[1] >> m_auiEncounter[2] >> m_auiEncounter[3]
+            >> m_auiEncounter[4] >> m_auiEncounter[5] >> m_auiEncounter[6] >> m_auiEncounter[7] >> m_auiEncounter[8];
 
-        for(uint8 i = 0; i < ENCOUNTERS; ++i)
-            if (m_uiEncounter[i] == IN_PROGRESS)            // Do not load an encounter as "In Progress" - reset it instead.
-                m_uiEncounter[i] = NOT_STARTED;
+        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            if (m_auiEncounter[i] == IN_PROGRESS)            // Do not load an encounter as "In Progress" - reset it instead.
+                m_auiEncounter[i] = NOT_STARTED;
 
         OUT_LOAD_INST_DATA_COMPLETE;
     }

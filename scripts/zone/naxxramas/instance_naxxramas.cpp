@@ -98,7 +98,7 @@ struct MANGOS_DLL_DECL instance_naxxramas : public ScriptedInstance
     instance_naxxramas(Map* pMap) : ScriptedInstance(pMap) {Initialize();}
 
     std::string strInstData;
-    uint32 m_auiEncounter[MAX_ENCOUNTER];
+    uint32 m_uiEncounter[MAX_ENCOUNTER];
 
     uint32 StalaggFeugen_Target_Timer;
 

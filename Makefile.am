@@ -239,6 +239,7 @@ scripts/kalimdor/teldrassil.cpp \
 scripts/kalimdor/the_barrens.cpp \
 scripts/kalimdor/thousand_needles.cpp \
 scripts/kalimdor/thunder_bluff.cpp \
+scripts/kalimdor/ungoro_crater.cpp \
 scripts/kalimdor/winterspring.cpp \
 scripts/kalimdor/blackfathom_deeps/def_blackfathom_deeps.h \
 scripts/kalimdor/blackfathom_deeps/instance_blackfathom_deeps.cpp \
@@ -289,10 +290,12 @@ scripts/kalimdor/temple_of_ahnqiraj/mob_anubisath_sentinel.cpp \
 scripts/kalimdor/wailing_caverns/instance_wailing_caverns.cpp \
 scripts/kalimdor/zulfarrak/zulfarrak.cpp \
 scripts/northrend/borean_tundra.cpp \
+scripts/northrend/dalaran.cpp \
 scripts/northrend/dragonblight.cpp \
 scripts/northrend/grizzly_hills.cpp \
 scripts/northrend/icecrown.cpp \
 scripts/northrend/sholazar_basin.cpp \
+scripts/northrend/storm_peaks.cpp \
 scripts/northrend/azjol-nerub/azjol-nerub/def_azjol-nerub.h \
 scripts/northrend/azjol-nerub/azjol-nerub/instance_azjol-nerub.cpp \
 scripts/northrend/naxxramas/boss_anubrekhan.cpp \

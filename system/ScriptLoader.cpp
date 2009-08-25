@@ -237,6 +237,7 @@ extern void AddSC_teldrassil();
 extern void AddSC_the_barrens();
 extern void AddSC_thousand_needles();
 extern void AddSC_thunder_bluff();
+extern void AddSC_ungoro_crater();
 extern void AddSC_winterspring();
 
 //northrend
@@ -271,10 +272,12 @@ extern void AddSC_instance_utgarde_keep();
 extern void AddSC_utgarde_keep();
 
 extern void AddSC_borean_tundra();
+extern void AddSC_dalaran();
 extern void AddSC_dragonblight();
 extern void AddSC_grizzly_hills();
 extern void AddSC_icecrown();
 extern void AddSC_sholazar_basin();
+extern void AddSC_storm_peaks();
 
 //outland
 extern void AddSC_boss_exarch_maladaar();                   //auchindoun, auchenai_crypts
@@ -589,6 +592,7 @@ void AddScripts()
     AddSC_the_barrens();
     AddSC_thousand_needles();
     AddSC_thunder_bluff();
+    AddSC_ungoro_crater();
     AddSC_winterspring();
 
     //northrend
@@ -623,10 +627,12 @@ void AddScripts()
     AddSC_utgarde_keep();
 
     AddSC_borean_tundra();
+    AddSC_dalaran();
     AddSC_dragonblight();
     AddSC_grizzly_hills();
     AddSC_icecrown();
     AddSC_sholazar_basin();
+    AddSC_storm_peaks();
 
     //outland
     AddSC_boss_exarch_maladaar();                           //auchindoun, auchenai_crypts

@@ -472,7 +472,7 @@ struct MANGOS_DLL_DECL npc_wounded_blood_elfAI : public npc_escortAI
 
     void Aggro(Unit* who)
     {
-        if (IsBeingEscorted)
+        if (HasEscortState(STATE_ESCORT_ESCORTING))
             DoScriptText(SAY_ELF_AGGRO, m_creature);
     }
 
@@ -492,7 +492,7 @@ bool QuestAccept_npc_wounded_blood_elf(Player* pPlayer, Creature* pCreature, con
     if (pQuest->GetQuestId() == QUEST_ROAD_TO_FALCON_WATCH)
     {
         // Change faction so mobs attack
-        pCreature->setFaction(775);
+        pCreature->setFaction(FACTION_ESCORT_H_PASSIVE);
 
         if (npc_wounded_blood_elfAI* pEscortAI = dynamic_cast<npc_wounded_blood_elfAI*>(pCreature->AI()))
             pEscortAI->Start(true, false, pPlayer->GetGUID(), pQuest);

@@ -1268,6 +1268,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\scripts\kalimdor\ungoro_crater.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\scripts\kalimdor\winterspring.cpp"
 					>
 				</File>
@@ -1536,6 +1540,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\scripts\northrend\dalaran.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\scripts\northrend\dragonblight.cpp"
 					>
 				</File>
@@ -1549,6 +1557,10 @@
 				</File>
 				<File
 					RelativePath="..\scripts\northrend\sholazar_basin.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\scripts\northrend\storm_peaks.cpp"
 					>
 				</File>
 				<Filter

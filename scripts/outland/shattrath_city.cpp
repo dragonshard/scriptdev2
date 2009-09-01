@@ -52,9 +52,9 @@ enum
 
 struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
 {
-    npc_dirty_larryAI(Creature* pC) : ScriptedAI(pC)
+    npc_dirty_larryAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_uiNpcFlags = pC->GetUInt32Value(UNIT_NPC_FLAGS);
+        m_uiNpcFlags = pCreature->GetUInt32Value(UNIT_NPC_FLAGS);
         m_uiCreepjackGUID = 0;
         m_uiMaloneGUID = 0;
         Reset();
@@ -88,7 +88,6 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
 
         //expect database to have correct faction (1194) and then only unit flags set/remove needed
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_8);
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
     }
 
@@ -105,13 +104,11 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
                 pCreature->AI()->EnterEvadeMode();
 
             pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_8);
             pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
         }
         else
         {
             pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_8);
             pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
 
             if (!pCreature->isAlive())
@@ -135,7 +132,6 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
         m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_8);
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
 
         if (Creature* pCreepjack = GetClosestCreatureWithEntry(m_creature, ENTRY_CREEPJACK, 20.0f))
@@ -349,93 +345,282 @@ bool GossipSelect_npc_khadgar(Player* pPlayer, Creature* pCreature, uint32 uiSen
 
 enum
 {
-    SAY_KHAD_SERV_0     = -1000234,
-    SAY_KHAD_SERV_1     = -1000235,
-    SAY_KHAD_SERV_2     = -1000236,
-    SAY_KHAD_SERV_3     = -1000237,
-    SAY_KHAD_SERV_4     = -1000238,
-    SAY_KHAD_SERV_5     = -1000239,
-    SAY_KHAD_SERV_6     = -1000240,
-    SAY_KHAD_SERV_7     = -1000241,
-    SAY_KHAD_SERV_8     = -1000242,
-    SAY_KHAD_SERV_9     = -1000243,
-    SAY_KHAD_SERV_10    = -1000244,
-    SAY_KHAD_SERV_11    = -1000245,
-    SAY_KHAD_SERV_12    = -1000246,
-    SAY_KHAD_SERV_13    = -1000247,
-    SAY_KHAD_SERV_14    = -1000248,
-    SAY_KHAD_SERV_15    = -1000249,
-    SAY_KHAD_SERV_16    = -1000250,
-    SAY_KHAD_SERV_17    = -1000251,
-    SAY_KHAD_SERV_18    = -1000252,
-    SAY_KHAD_SERV_19    = -1000253,
-    SAY_KHAD_SERV_20    = -1000254,
-    SAY_KHAD_SERV_21    = -1000255,
+    SAY_KHAD_START          = -1000489,
+    SAY_KHAD_SERV_0         = -1000234,
+
+    SAY_KHAD_SERV_1         = -1000235,
+    SAY_KHAD_SERV_2         = -1000236,
+    SAY_KHAD_SERV_3         = -1000237,
+    SAY_KHAD_SERV_4         = -1000238,
+
+    SAY_KHAD_SERV_5         = -1000239,
+    SAY_KHAD_SERV_6         = -1000240,
+    SAY_KHAD_SERV_7         = -1000241,
+
+    SAY_KHAD_SERV_8         = -1000242,
+    SAY_KHAD_SERV_9         = -1000243,
+    SAY_KHAD_SERV_10        = -1000244,
+    SAY_KHAD_SERV_11        = -1000245,
+
+    SAY_KHAD_SERV_12        = -1000246,
+    SAY_KHAD_SERV_13        = -1000247,
+
+    SAY_KHAD_SERV_14        = -1000248,
+    SAY_KHAD_SERV_15        = -1000249,
+    SAY_KHAD_SERV_16        = -1000250,
+    SAY_KHAD_SERV_17        = -1000251,
+
+    SAY_KHAD_SERV_18        = -1000252,
+    SAY_KHAD_SERV_19        = -1000253,
+    SAY_KHAD_SERV_20        = -1000254,
+    SAY_KHAD_SERV_21        = -1000255,
+
+    SAY_KHAD_INJURED        = -1000490,
+    SAY_KHAD_MIND_YOU       = -1000491,
+    SAY_KHAD_MIND_ALWAYS    = -1000492,
+    SAY_KHAD_ALDOR_GREET    = -1000493,
+    SAY_KHAD_SCRYER_GREET   = -1000494,
+    SAY_KHAD_HAGGARD        = -1000495,
+
+    NPC_KHADGAR             = 18166,
+    NPC_SHANIR              = 18597,
+    NPC_IZZARD              = 18622,
+    NPC_ADYRIA              = 18596,
+    NPC_ANCHORITE           = 19142,
+    NPC_ARCANIST            = 18547,
+    NPC_HAGGARD             = 19684
 };
 
 struct MANGOS_DLL_DECL npc_khadgars_servantAI : public npc_escortAI
 {
     npc_khadgars_servantAI(Creature* pCreature) : npc_escortAI(pCreature)
     {
-        if (pCreature->GetOwnerGUID() && IS_PLAYER_GUID(pCreature->GetOwnerGUID()))
-            pguid = pCreature->GetOwnerGUID();
+        if (pCreature->GetOwner() && pCreature->GetOwner()->GetTypeId() == TYPEID_PLAYER)
+            Start(false, false, pCreature->GetOwner()->GetGUID());
         else
-            error_log("SD2: npc_khadgars_servant can not obtain ownerGUID or ownerGUID is not a player.");
+            error_log("SD2: npc_khadgars_servant can not obtain owner or owner is not a player.");
 
-        pCreature->SetSpeed(MOVE_WALK,1.3f);
+        pCreature->SetSpeed(MOVE_WALK,1.5f);
         Reset();
     }
 
-    uint64 pguid;
+    uint32 m_uiPointId;
+    uint32 m_uiTalkTimer;
+    uint32 m_uiTalkCount;
+    uint32 m_uiRandomTalkCooldown;
 
-    void Reset() {}
-
-    void WaypointReached(uint32 i)
+    void Reset()
     {
-        Player* pPlayer = GetPlayerForEscort();
+        m_uiTalkTimer = 2500;
+        m_uiTalkCount = 0;
+        m_uiPointId = 0;
+        m_uiRandomTalkCooldown = 0;
+    }
 
-        if (!pPlayer)
-            return;
-
-        switch(i)
+    void MoveInLineOfSight(Unit* pWho)
+    {
+        if (!m_uiRandomTalkCooldown && pWho->GetTypeId() == TYPEID_UNIT && m_creature->IsWithinDistInMap(pWho, 10.0f))
         {
-            case 1: DoScriptText(SAY_KHAD_SERV_0, m_creature, pPlayer); break;
-            case 4: DoScriptText(SAY_KHAD_SERV_1, m_creature, pPlayer); break;
-            case 6: DoScriptText(SAY_KHAD_SERV_2, m_creature, pPlayer); break;
-            case 7: DoScriptText(SAY_KHAD_SERV_3, m_creature, pPlayer); break;
-            case 8: DoScriptText(SAY_KHAD_SERV_4, m_creature, pPlayer); break;
-            case 17: DoScriptText(SAY_KHAD_SERV_5, m_creature, pPlayer); break;
-            case 18: DoScriptText(SAY_KHAD_SERV_6, m_creature, pPlayer); break;
-            case 19: DoScriptText(SAY_KHAD_SERV_7, m_creature, pPlayer); break;
-            case 33: DoScriptText(SAY_KHAD_SERV_8, m_creature, pPlayer); break;
-            case 34: DoScriptText(SAY_KHAD_SERV_9, m_creature, pPlayer); break;
-            case 35: DoScriptText(SAY_KHAD_SERV_10, m_creature, pPlayer); break;
-            case 36: DoScriptText(SAY_KHAD_SERV_11, m_creature, pPlayer); break;
-            case 43: DoScriptText(SAY_KHAD_SERV_12, m_creature, pPlayer); break;
-            case 44: DoScriptText(SAY_KHAD_SERV_13, m_creature, pPlayer); break;
-            case 49: DoScriptText(SAY_KHAD_SERV_14, m_creature, pPlayer); break;
-            case 50: DoScriptText(SAY_KHAD_SERV_15, m_creature, pPlayer); break;
-            case 51: DoScriptText(SAY_KHAD_SERV_16, m_creature, pPlayer); break;
-            case 52: DoScriptText(SAY_KHAD_SERV_17, m_creature, pPlayer); break;
-            case 53: DoScriptText(SAY_KHAD_SERV_18, m_creature, pPlayer); break;
-            case 54: DoScriptText(SAY_KHAD_SERV_19, m_creature, pPlayer); break;
-            case 55: DoScriptText(SAY_KHAD_SERV_20, m_creature, pPlayer); break;
-            case 56:
-                DoScriptText(SAY_KHAD_SERV_21, m_creature, pPlayer);
-                pPlayer->AreaExploredOrEventHappens(QUEST_CITY_LIGHT);
+            switch(pWho->GetEntry())
+            {
+                case NPC_HAGGARD:
+                    if (Player* pPlayer = GetPlayerForEscort())
+                        DoScriptText(SAY_KHAD_HAGGARD, pWho, pPlayer);
+                    m_uiRandomTalkCooldown = 7500;
+                    break;
+                case NPC_ANCHORITE:
+                    if (Player* pPlayer = GetPlayerForEscort())
+                        DoScriptText(SAY_KHAD_ALDOR_GREET, pWho, pPlayer);
+                    m_uiRandomTalkCooldown = 7500;
+                    break;
+                case NPC_ARCANIST:
+                    if (Player* pPlayer = GetPlayerForEscort())
+                        DoScriptText(SAY_KHAD_SCRYER_GREET, pWho, pPlayer);
+                    m_uiRandomTalkCooldown = 7500;
+                    break;
+            }
+        }
+    }
+
+    void WaypointStart(uint32 uiPointId)
+    {
+        if (uiPointId == 2)
+            DoScriptText(SAY_KHAD_SERV_0, m_creature);
+    }
+
+    void WaypointReached(uint32 uiPointId)
+    {
+        m_uiPointId = uiPointId;
+
+        switch(uiPointId)
+        {
+            case 0:
+                if (Creature* pKhadgar = GetClosestCreatureWithEntry(m_creature, NPC_KHADGAR, 10.0f))
+                    DoScriptText(SAY_KHAD_START, pKhadgar);
+                break;
+            case 5:
+            case 24:
+            case 50:
+            case 63:
+            case 74:
+            case 75:
+                SetEscortPaused(true);
+                break;
+            case 34:
+                if (Creature* pIzzard = GetClosestCreatureWithEntry(m_creature, NPC_IZZARD, 10.0f))
+                    DoScriptText(SAY_KHAD_MIND_YOU, pIzzard);
+                break;
+            case 35:
+                if (Creature* pAdyria = GetClosestCreatureWithEntry(m_creature, NPC_ADYRIA, 10.0f))
+                    DoScriptText(SAY_KHAD_MIND_ALWAYS, pAdyria);
                 break;
         }
     }
 
-    void UpdateAI(const uint32 diff)
+    void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!HasEscortState(STATE_ESCORT_ESCORTING) && pguid)
+        if (m_uiRandomTalkCooldown)
         {
-            Start(false, false, pguid);
-            pguid = 0;
+            if (m_uiRandomTalkCooldown <= uiDiff)
+                m_uiRandomTalkCooldown = 0;
+            else
+                m_uiRandomTalkCooldown -= uiDiff;
         }
 
-        npc_escortAI::UpdateAI(diff);
+        if (HasEscortState(STATE_ESCORT_PAUSED))
+        {
+            if (m_uiTalkTimer <= uiDiff)
+            {
+                ++m_uiTalkCount;
+                m_uiTalkTimer = 7500;
+
+                Player* pPlayer = GetPlayerForEscort();
+
+                if (!pPlayer)
+                    return;
+
+                switch(m_uiPointId)
+                {
+                    case 5:                                 //to lower city
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 1:
+                                DoScriptText(SAY_KHAD_SERV_1, m_creature, pPlayer);
+                                break;
+                            case 2:
+                                DoScriptText(SAY_KHAD_SERV_2, m_creature, pPlayer);
+                                break;
+                            case 3:
+                                DoScriptText(SAY_KHAD_SERV_3, m_creature, pPlayer);
+                                break;
+                            case 4:
+                                DoScriptText(SAY_KHAD_SERV_4, m_creature, pPlayer);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                    case 24:                                //in lower city
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 5:
+                                if (Creature* pShanir = GetClosestCreatureWithEntry(m_creature, NPC_SHANIR, 15.0f))
+                                    DoScriptText(SAY_KHAD_INJURED, pShanir, pPlayer);
+
+                                DoScriptText(SAY_KHAD_SERV_5, m_creature, pPlayer);
+                                break;
+                            case 6:
+                                DoScriptText(SAY_KHAD_SERV_6, m_creature, pPlayer);
+                                break;
+                            case 7:
+                                DoScriptText(SAY_KHAD_SERV_7, m_creature, pPlayer);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                    case 50:                                //outside
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 8:
+                                DoScriptText(SAY_KHAD_SERV_8, m_creature, pPlayer);
+                                break;
+                            case 9:
+                                DoScriptText(SAY_KHAD_SERV_9, m_creature, pPlayer);
+                                break;
+                            case 10:
+                                DoScriptText(SAY_KHAD_SERV_10, m_creature, pPlayer);
+                                break;
+                            case 11:
+                                DoScriptText(SAY_KHAD_SERV_11, m_creature, pPlayer);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                    case 63:                                //scryer
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 12:
+                                DoScriptText(SAY_KHAD_SERV_12, m_creature, pPlayer);
+                                break;
+                            case 13:
+                                DoScriptText(SAY_KHAD_SERV_13, m_creature, pPlayer);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                    case 74:                                //aldor
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 14:
+                                DoScriptText(SAY_KHAD_SERV_14, m_creature, pPlayer);
+                                break;
+                            case 15:
+                                DoScriptText(SAY_KHAD_SERV_15, m_creature, pPlayer);
+                                break;
+                            case 16:
+                                DoScriptText(SAY_KHAD_SERV_16, m_creature, pPlayer);
+                                break;
+                            case 17:
+                                DoScriptText(SAY_KHAD_SERV_17, m_creature, pPlayer);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                    case 75:                                //a'dal
+                    {
+                        switch(m_uiTalkCount)
+                        {
+                            case 18:
+                                DoScriptText(SAY_KHAD_SERV_18, m_creature, pPlayer);
+                                break;
+                            case 19:
+                                DoScriptText(SAY_KHAD_SERV_19, m_creature, pPlayer);
+                                break;
+                            case 20:
+                                DoScriptText(SAY_KHAD_SERV_20, m_creature, pPlayer);
+                                break;
+                            case 21:
+                                DoScriptText(SAY_KHAD_SERV_21, m_creature, pPlayer);
+                                pPlayer->AreaExploredOrEventHappens(QUEST_CITY_LIGHT);
+                                SetEscortPaused(false);
+                                break;
+                        }
+                        break;
+                    }
+                }
+            }
+            else
+                m_uiTalkTimer -= uiDiff;
+        }
     }
 };
 

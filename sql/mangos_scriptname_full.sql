@@ -792,6 +792,8 @@ UPDATE creature_template SET ScriptName='mob_mature_netherwing_drake' WHERE entr
 UPDATE creature_template SET ScriptName='mob_enslaved_netherwing_drake' WHERE entry=21722;
 UPDATE creature_template SET ScriptName='npc_karynaku' WHERE entry=22112;
 UPDATE creature_template SET ScriptName='npc_wilda' WHERE entry=21027;
+UPDATE creature_template SET ScriptName='mob_torloth' WHERE entry=22076;
+UPDATE creature_template SET ScriptName='npc_lord_illidan_stormrage' WHERE entry=22083;
 
 /* SHATTRATH */
 UPDATE creature_template SET ScriptName='npc_dirty_larry' WHERE entry=19720;
@@ -956,6 +958,7 @@ UPDATE creature_template SET ScriptName='mob_rotting_forest_rager' WHERE entry=2
 UPDATE creature_template SET ScriptName='mob_unkor_the_ruthless' WHERE entry=18262;
 UPDATE creature_template SET ScriptName='npc_akuno' WHERE entry=22377;
 UPDATE creature_template SET ScriptName='npc_floon' WHERE entry=18588;
+UPDATE creature_template SET ScriptName='npc_letoll' WHERE entry=22458;
 UPDATE creature_template SET ScriptName='npc_mana_bomb_exp_trigger' WHERE entry=20767;
 UPDATE gameobject_template SET ScriptName='go_mana_bomb' WHERE entry=184725;
 UPDATE creature_template SET ScriptName='npc_skyguard_handler_irena' WHERE entry=23413;

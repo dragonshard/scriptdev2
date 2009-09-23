@@ -40,6 +40,10 @@ EndScriptData */
 #define SPELL_ENRAGE                28798
 #define H_SPELL_ENRAGE              54100
 
+#define SPELL_FIREBALL              54095
+#define SPELL_FIREBALL_H            54096
+#define SPELL_WIDOWS_EMBRACE        28732
+
 #define SPELL_RAINOFFIRE            28794                   //Not sure if targeted AoEs work if casted directly upon a pPlayer
 
 struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
@@ -65,6 +69,15 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         RainOfFire_Timer = 16000;
         Enrage_Timer = 60000;
         HasTaunted = false;
+
+        std::list<Creature*> lUnitList;
+        GetCreatureListWithEntryInGrid(lUnitList, m_creature, 16506, 100.0f);
+        if (!lUnitList.empty())
+        {
+            for(std::list<Creature*>::iterator iter = lUnitList.begin(); iter != lUnitList.end(); ++iter)
+                if ((*iter)->isDead())
+                    (*iter)->Respawn();
+        }
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_FAERLINA, NOT_STARTED);
@@ -121,7 +134,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
         if (PoisonBoltVolley_Timer < diff)
         {
             DoCast(m_creature->getVictim(), m_bIsHeroicMode ? H_SPELL_POSIONBOLT_VOLLEY : SPELL_POSIONBOLT_VOLLEY);
-            PoisonBoltVolley_Timer = 11000;
+            PoisonBoltVolley_Timer = 9000 + rand()%2000;
         }else PoisonBoltVolley_Timer -= diff;
 
         //RainOfFire_Timer
@@ -130,7 +143,7 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
                 DoCast(target,SPELL_RAINOFFIRE);
 
-            RainOfFire_Timer = 16000;
+            RainOfFire_Timer = 14000 + rand()%2000;
         }else RainOfFire_Timer -= diff;
 
         //Enrage_Timer
@@ -144,6 +157,89 @@ struct MANGOS_DLL_DECL boss_faerlinaAI : public ScriptedAI
     }
 };
 
+struct MANGOS_DLL_DECL mob_worshippersAI : public ScriptedAI
+{
+    mob_worshippersAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        Reset();
+    }
+
+    ScriptedInstance* m_pInstance;
+    bool m_bIsHeroicMode;
+    bool m_bIsDead;
+
+    uint32 m_uiFireball_Timer;
+    uint32 m_uiDeathDelay_Timer;
+
+    void Reset()
+    {
+        m_bIsDead = false;
+        m_uiFireball_Timer = 0;
+        m_uiDeathDelay_Timer = 0;
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    {
+        if (m_bIsDead)
+        {
+            uiDamage = 0;
+            return;
+        }
+
+        if (uiDamage > m_creature->GetHealth())
+        {
+            if (m_creature->IsNonMeleeSpellCasted(false))
+                m_creature->InterruptNonMeleeSpells(false);
+
+            m_creature->RemoveAllAuras();
+            m_creature->AttackStop();
+
+            DoCast(m_creature, SPELL_WIDOWS_EMBRACE);
+
+            if (m_pInstance)
+                if (Creature* pFaerlina = ((Creature*)Unit::GetUnit((*m_creature), m_pInstance->GetData64(DATA_FAERLINA))))
+                    if (m_creature->GetDistance2d(pFaerlina) <= 5 && pFaerlina->HasAura(m_bIsHeroicMode ? H_SPELL_ENRAGE : SPELL_ENRAGE))
+                        pFaerlina->RemoveAurasDueToSpell(m_bIsHeroicMode ? H_SPELL_ENRAGE : SPELL_ENRAGE);
+
+            m_bIsDead = true;
+            m_uiDeathDelay_Timer = 500;
+
+            uiDamage = 0;
+            return;
+        }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (m_uiDeathDelay_Timer)
+            if (m_uiDeathDelay_Timer < uiDiff)
+            {
+                m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
+                m_uiDeathDelay_Timer = 0;
+            }
+            else m_uiDeathDelay_Timer -= uiDiff;
+
+        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim() || m_bIsDead)
+            return;
+
+        if (m_uiFireball_Timer < uiDiff)
+        {
+            DoCast(m_creature->getVictim(), m_bIsHeroicMode ? SPELL_FIREBALL_H : SPELL_FIREBALL);
+            m_uiFireball_Timer = 7000 + rand()%4000;
+        }
+        else m_uiFireball_Timer -= uiDiff;
+
+        DoMeleeAttackIfReady();
+    }
+};
+
+CreatureAI* GetAI_mob_worshippers(Creature* pCreature)
+{
+    return new mob_worshippersAI(pCreature);
+}
+
 CreatureAI* GetAI_boss_faerlina(Creature* pCreature)
 {
     return new boss_faerlinaAI(pCreature);
@@ -155,5 +251,10 @@ void AddSC_boss_faerlina()
     newscript = new Script;
     newscript->Name = "boss_faerlina";
     newscript->GetAI = &GetAI_boss_faerlina;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_worshippers";
+    newscript->GetAI = &GetAI_mob_worshippers;
     newscript->RegisterSelf();
 }

@@ -77,10 +77,14 @@ struct MANGOS_DLL_DECL boss_grobbulusAI : public ScriptedAI
 
     void SpellHitTarget(Unit *target, const SpellEntry *spell)
     {
-        if(spell->Id == SPELL_SLIME_SPRAY)
+        if(spell->Id == SPELL_SLIME_SPRAY || spell->Id == H_SPELL_SLIME_SPRAY)
         {
-            if (Creature* pSlime = m_creature->SummonCreature(MOB_FALLOUT_SLIME, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 0))
-                pSlime->SetInCombatWithZone();
+            if (Creature* pTemp = m_creature->SummonCreature(MOB_FALLOUT_SLIME, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 1000))
+                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                {
+                    pTemp->AddThreat(pTarget,0.0f);
+                    pTemp->AI()->AttackStart(pTarget);
+                }
         }
     }
 

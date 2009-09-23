@@ -22,23 +22,39 @@ SDCategory: Naxxramas
 EndScriptData */
 
 #include "precompiled.h"
+#include "def_naxxramas.h"
 
 #define EMOTE_BREATH            -1533082
 #define EMOTE_ENRAGE            -1533083
 
 #define SPELL_ICEBOLT           28522
 #define SPELL_FROST_BREATH      29318
+#define SPELL_FROST_BREATH_H    28524
 #define SPELL_FROST_AURA        28531
 #define SPELL_LIFE_DRAIN        28542
+#define SPELL_LIFE_DRAIN_H      55665
 #define SPELL_BLIZZARD          28547
 #define SPELL_BESERK            26662
+#define SPELL_ICEBOLT_VISUAL    45776
+#define SPELL_CLEAVE            19983
+#define SPELL_TAIL_LASH         55697
+#define SPELL_TAIL_LASH_H       55696
+
+#define SAPPHIRON_X             3522
+#define SAPPHIRON_Y             -5236
+#define SAPPHIRON_Z             137
 
 struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
 {
     boss_sapphironAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
+        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
         Reset();
     }
+
+    ScriptedInstance *m_pInstance;
+    bool m_bIsHeroicMode;
 
     uint32 Icebolt_Count;
     uint32 Icebolt_Timer;
@@ -48,9 +64,12 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
     uint32 Blizzard_Timer;
     uint32 Fly_Timer;
     uint32 Beserk_Timer;
+    uint32 m_uiCleaveTimer;
+    uint32 m_uiTailSweepTimer;
     uint32 phase;
     bool landoff;
     uint32 land_Timer;
+    std::vector<Unit*> targets;
 
     void Reset()
     {
@@ -61,12 +80,97 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         Fly_Timer = 45000;
         Icebolt_Timer = 4000;
         land_Timer = 2000;
-        Beserk_Timer = 0;
+        Beserk_Timer = 900000;
+        m_uiCleaveTimer = 7000;
+        m_uiTailSweepTimer = 20000;
         phase = 1;
         Icebolt_Count = 0;
         landoff = false;
 
+        targets.clear();
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_SAPPHIRON, NOT_STARTED);
         //m_creature->ApplySpellMod(SPELL_FROST_AURA, SPELLMOD_DURATION, -1);
+    }
+
+    void Aggro(Unit* who)
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_SAPPHIRON, IN_PROGRESS);
+    }
+
+    void MoveInLineOfSight(Unit* who)
+    {
+        if (!who)
+            return;
+
+        if (who->isTargetableForAttack() && who->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (m_pInstance)
+            {
+                if (m_pInstance->GetData(TYPE_SAPPHIRON) == NOT_STARTED)
+                {
+                    if (m_pInstance->GetData(TYPE_THADDIUS) == DONE && m_pInstance->GetData(TYPE_MAEXXNA) == DONE &&
+                        m_pInstance->GetData(TYPE_FOUR_HORSEMEN) == DONE && m_pInstance->GetData(TYPE_LOATHEB) == DONE)
+                    {
+                        if (m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+                            m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    }
+                    else
+                    {
+                        if (!m_creature->HasFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE))
+                            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    }
+                }
+            }
+        }
+    }
+
+    void SpellHitTarget(Unit *target, const SpellEntry *spell)
+    {
+        if(spell->Id == SPELL_ICEBOLT)
+        {
+                    if (target->isAlive() && target->HasAura(SPELL_ICEBOLT))
+                    {
+                        target->CastSpell(target, 62766, true);
+                        target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+                    }
+
+/*            for(std::vector<Unit*>::iterator itr = targets.begin(); itr!= targets.end(); ++itr)
+            {
+                if (*itr)
+                {
+                    if (target->isAlive() && (*itr)->GetGUID() == target->GetGUID() && !((*itr)->HasAura(SPELL_ICEBOLT)))
+                    {
+                        target->CastSpell(target, 62766, true);
+                        target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+                    }
+            	}
+            }
+*/
+            return;
+        }
+
+        if(spell->Id == SPELL_FROST_BREATH)
+        {
+            if (target->GetTypeId() != TYPEID_PLAYER)
+                return;
+
+            if (target->HasAura(SPELL_ICEBOLT))
+            {
+                target->RemoveAurasDueToSpell(62766);
+                target->RemoveAurasDueToSpell(SPELL_ICEBOLT);
+                target->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
+                return;
+            }
+        }
+    }
+
+    void JustDied(Unit* pKiller)
+    {
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_SAPPHIRON, DONE);
     }
 
     void UpdateAI(const uint32 diff)
@@ -85,7 +189,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             if (LifeDrain_Timer < diff)
             {
                 if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                    DoCast(target,SPELL_LIFE_DRAIN);
+                    DoCast(target, m_bIsHeroicMode ? SPELL_LIFE_DRAIN_H : SPELL_LIFE_DRAIN);
 
                 LifeDrain_Timer = 24000;
             }else LifeDrain_Timer -= diff;
@@ -98,6 +202,24 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 Blizzard_Timer = 20000;
             }else Blizzard_Timer -= diff;
 
+            // Cleave
+            if (m_uiCleaveTimer < diff)
+            {
+                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                m_uiCleaveTimer = 7000 + rand()%3000;
+            }
+            else
+                m_uiCleaveTimer -= diff;
+
+            // Tail Sweep
+            if (m_uiTailSweepTimer < diff)
+            {
+                DoCast(m_creature->getVictim(), m_bIsHeroicMode ? SPELL_TAIL_LASH_H : SPELL_TAIL_LASH);
+                m_uiTailSweepTimer = 15000 + rand()%5000;
+            }
+            else
+                m_uiTailSweepTimer -= diff;
+
             if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() > 10)
             {
                 if (Fly_Timer < diff)
@@ -105,11 +227,14 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                     phase = 2;
                     m_creature->InterruptNonMeleeSpells(false);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LIFTOFF);
+                    m_creature->StopMoving();
                     m_creature->GetMotionMaster()->Clear(false);
                     m_creature->GetMotionMaster()->MoveIdle();
-                    DoCast(m_creature,11010);
-                    m_creature->SetHover(true);
-                    DoCast(m_creature,18430);
+                    m_creature->GetMap()->CreatureRelocation(m_creature, SAPPHIRON_X, SAPPHIRON_Y, SAPPHIRON_Z + 20, m_creature->GetOrientation());
+                    m_creature->SendMonsterMove(SAPPHIRON_X, SAPPHIRON_Y, SAPPHIRON_Z + 20, 0, m_creature->GetMonsterMoveFlags(), 1);
+                    //DoCast(m_creature,11010);
+                    //m_creature->SetHover(true);
+                    //DoCast(m_creature,18430);
                     Icebolt_Timer = 4000;
                     Icebolt_Count = 0;
                     landoff = false;
@@ -121,8 +246,12 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
         {
             if (Icebolt_Timer < diff && Icebolt_Count < 5)
             {
-                if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                    DoCast(target,SPELL_ICEBOLT);
+                if (Icebolt_Count == 1 || Icebolt_Count == 3)
+                    if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+                    {
+                        DoCast(target, SPELL_ICEBOLT);
+                        targets.push_back(target);
+                    }
 
                 ++Icebolt_Count;
                 Icebolt_Timer = 4000;
@@ -132,6 +261,27 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
             {
                 if (FrostBreath_Timer < diff)
                 {
+                    // apply immune
+                    std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
+                    for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+                    {
+                        Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
+                        if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
+                        {
+                            if (!pUnit->HasAura(SPELL_ICEBOLT))
+                            {
+                                for(std::vector<Unit*>::iterator itr = targets.begin(); itr!= targets.end(); ++itr)
+                                {
+                                    if (*itr)
+                                    {
+                                        if (pUnit->GetDistance2d(*itr) <= 5 && (*itr)->HasAura(SPELL_ICEBOLT))
+                                            pUnit->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, true);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     DoScriptText(EMOTE_BREATH, m_creature);
                     DoCast(m_creature->getVictim(),SPELL_FROST_BREATH);
                     land_Timer = 2000;
@@ -146,23 +296,31 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 {
                     phase = 1;
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_LAND);
-                    m_creature->SetHover(false);
-                    m_creature->GetMotionMaster()->Clear(false);
-                    m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                    //m_creature->SetHover(false);
+                    //m_creature->GetMotionMaster()->Clear(false);
+                    //m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
+                    DoStartMovement(m_creature->getVictim());
+
+                    std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
+                    for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+                    {
+                        Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
+                        if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
+                            pUnit->ApplySpellImmune(0, IMMUNITY_SCHOOL, SPELL_SCHOOL_MASK_FROST, false);
+                    }
+
+                    targets.clear();
                     Fly_Timer = 67000;
                 }else land_Timer -= diff;
             }
         }
 
-        if ((m_creature->GetHealth()*100) / m_creature->GetMaxHealth() <= 10)
+        if (Beserk_Timer < diff)
         {
-            if (Beserk_Timer < diff)
-            {
-                DoScriptText(EMOTE_ENRAGE, m_creature);
-                DoCast(m_creature,SPELL_BESERK);
-                Beserk_Timer = 300000;
-            }else Beserk_Timer -= diff;
-        }
+            DoScriptText(EMOTE_ENRAGE, m_creature);
+            DoCast(m_creature,SPELL_BESERK);
+            Beserk_Timer = 900000;
+        }else Beserk_Timer -= diff;
 
         if (phase!=2)
             DoMeleeAttackIfReady();

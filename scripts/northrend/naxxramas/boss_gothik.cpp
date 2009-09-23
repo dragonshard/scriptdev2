@@ -83,7 +83,7 @@ waves[] =
     {MOB_LIVE_TRAINEE, 2, 20000},
     {MOB_LIVE_TRAINEE, 2, 10000},
     {MOB_LIVE_KNIGHT,  1, 10000}, // 60
-    {MOB_LIVE_TRAINEE, 2, 15000},
+    {MOB_LIVE_TRAINEE, 2, 15000}, 
     {MOB_LIVE_KNIGHT,  1, 10000},
     {MOB_LIVE_TRAINEE, 2, 15000},
     {MOB_LIVE_TRAINEE, 2, 0},
@@ -150,10 +150,10 @@ struct MANGOS_DLL_DECL boss_gothikAI : public Scripted_NoMovementAI
 
     void Reset()
     {
-        SummonPhase = false;
-        BlinkPhase = false;
+    	SummonPhase = false;
+    	BlinkPhase = false;
 
-        SummonsList.clear();
+    	SummonsList.clear();
 
         waveCount = 0;
         Summon_Timer = 10000;
@@ -235,6 +235,7 @@ struct MANGOS_DLL_DECL boss_gothikAI : public Scripted_NoMovementAI
                     m_creature->GetMap()->CreatureRelocation(m_creature, PosGroundDeath[0], PosGroundDeath[1], PosGroundDeath[2], 0.0f);
                     BlinkPhase = true;
                 }
+                DoResetThreat();
                 Blink_Timer = 15000;
             }else Blink_Timer -= diff;
         }

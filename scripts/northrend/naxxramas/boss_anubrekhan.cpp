@@ -73,6 +73,8 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
     uint32 Summon_Timer;
     uint32 Berserk_Timer;
 
+    std::list<uint64> m_lCryptGuardList;
+
     uint64 CryptGuardGUID[2];
     bool HasTaunted;
 
@@ -81,20 +83,11 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         Impale_Timer = 15000;                               //15 seconds
         LocustSwarm_Timer = 80000 + (rand()%40000);         //Random time between 80 seconds and 2 minutes for initial cast
         Summon_Timer = LocustSwarm_Timer + 20000;           //45 seconds after initial locust swarm
-        Berserk_Timer = 600000;
+        Berserk_Timer = 300000;
 
-        /*for(uint8 i = 0; i < (m_bIsHeroicMode ? 1 : 1); i++)
-        {
-            if (Creature* pCryptGuard = ((Creature*)Unit::GetUnit((*m_creature), CryptGuardGUID[i])))
-            {
-                if (!pCryptGuard->isAlive())
-                    pCryptGuard->Respawn();
-            }
-            else if (Creature* pCryptGuard = m_creature->SummonCreature(NPC_CRYPT_GUARD, m_creature->GetPositionX(), m_creature->GetPositionY()+10, m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000))
-            {
-                CryptGuardGUID[i] = pCryptGuard->GetGUID();
-            }
-        }*/
+        DespawnGuard();
+        for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
+            m_creature->SummonCreature(NPC_CRYPT_GUARD, m_creature->GetPositionX(), m_creature->GetPositionY()+10, m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000);
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_ANUB_REKHAN, NOT_STARTED);
@@ -131,12 +124,15 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         {
             m_pInstance->SetData(TYPE_ANUB_REKHAN, IN_PROGRESS);
 
-        /*for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
-        {
-            if (Creature* pCryptGuard = ((Creature*)Unit::GetUnit((*m_creature), CryptGuardGUID[i])))
-                if (pCryptGuard->isAlive())
-                    pCryptGuard->AI()->AttackStart(who);
-        }*/
+            for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
+            {
+                if (Creature* pCryptGuard = ((Creature*)Unit::GetUnit((*m_creature), CryptGuardGUID[i])))
+                    if (pCryptGuard->isAlive())
+                    {
+                        pCryptGuard->AddThreat(who,0.0f);
+                        pCryptGuard->AI()->AttackStart(who);
+                    }
+            }
         }
     }
 
@@ -156,6 +152,29 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         }
 
         ScriptedAI::MoveInLineOfSight(who);
+    }
+
+    void DespawnGuard()
+    {
+        if (m_lCryptGuardList.empty())
+            return;
+
+        for(std::list<uint64>::iterator itr = m_lCryptGuardList.begin(); itr != m_lCryptGuardList.end(); ++itr)
+        {
+            if (Creature* pTemp = (Creature*)Unit::GetUnit(*m_creature, *itr))
+            {
+                if (pTemp->isAlive())
+                    pTemp->ForcedDespawn();
+            }
+        }
+
+        m_lCryptGuardList.clear();
+    }
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (pSummoned->GetEntry() == NPC_CRYPT_GUARD)
+            m_lCryptGuardList.push_back(pSummoned->GetGUID());
     }
 
     void UpdateAI(const uint32 diff)
@@ -188,22 +207,28 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
         if (LocustSwarm_Timer < diff)
         {
             DoCast(m_creature, m_bIsHeroicMode ? SPELL_LOCUSTSWARM_H : SPELL_LOCUSTSWARM);
-            /*if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000))
-                    pTemp->SetInCombatWithZone();*/
+            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+                {
+                    pTemp->AddThreat(pTarget, 0.0f);
+                    pTemp->AI()->AttackStart(pTarget);
+                }
             LocustSwarm_Timer = 90000 + (rand()%30000);
-            Summon_Timer += 20000;
+            Summon_Timer += 30000;
         }else LocustSwarm_Timer -= diff;
 
         //Summon_Timer
-        /*if (Summon_Timer < diff)
+        if (Summon_Timer < diff)
         {
             //DoCast(m_creature, SPELL_SUMMONGUARD);
-            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, target->GetPositionX(), target->GetPositionY(), target->GetPositionZ(), 0, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 60000))
-                    pTemp->SetInCombatWithZone();
-            Summon_Timer = 90000;
-        }else Summon_Timer -= diff;*/
+            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
+                if (Creature* pTemp = m_creature->SummonCreature(NPC_CRYPT_GUARD, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 30000))
+                {
+                    pTemp->AddThreat(pTarget, 0.0f);
+                    pTemp->AI()->AttackStart(pTarget);
+                }
+            Summon_Timer = 30000;
+        }else Summon_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }

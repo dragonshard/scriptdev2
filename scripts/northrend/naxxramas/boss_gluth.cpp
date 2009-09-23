@@ -161,6 +161,11 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
             m_pInstance->SetData(TYPE_GLUTH, IN_PROGRESS);
     }
 
+    void JustSummoned(Creature* summoned)
+    {
+        summoned->SetSpeed(MOVE_RUN, 0.8f);
+    }
+
     void UpdateAI(const uint32 diff)
     {
         if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
@@ -189,7 +194,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                 {
                     Unit *target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
                     if (target && target->isAlive() && target->GetTypeId() == TYPEID_PLAYER &&
-                        (target->GetHealth() > target->GetMaxHealth() * 0.05))
+                    	(target->GetHealth() > target->GetMaxHealth() * 0.05))
                         target->SetHealth(target->GetMaxHealth() * 0.05);
                 }
             }
@@ -201,8 +206,8 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                         if (pTemp->isAlive())
                         {
                             ((mob_zombie_chowsAI*)pTemp->AI())->bIsForceMove = true;
-                            if (pTemp->GetHealth() > pTemp->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
-                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.05);
+                            if (m_creature->GetHealth() > m_creature->GetMaxHealth() * 0.05) // remove when SPELL_DECIMATE is working
+                                pTemp->SetHealth(pTemp->GetMaxHealth() * 0.02);
                             pTemp->AddThreat(m_creature, 1000000000.0f); // force move toward to Gluth
                         }
             }
@@ -246,7 +251,7 @@ struct MANGOS_DLL_DECL boss_gluthAI : public ScriptedAI
                     }
                 }
             }
-            Summon_Timer = 20000;
+            Summon_Timer = 10000;
         } else Summon_Timer -= diff;
 
         //m_uiBerserkTimer

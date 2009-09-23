@@ -71,8 +71,8 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
         Deathbloom_Timer = 30000;
         NecroticAura_Timer = 2500;
         InevitableDoom_Timer = 120000;
-        InevitableDoom5mins_Timer = 300000;
-        Enrage_Timer = 420000;
+        InevitableDoom5mins_Timer = 720000;
+        Enrage_Timer = 720000;
         Summon_Timer = 8000;
 
         if(m_pInstance)
@@ -136,7 +136,7 @@ struct MANGOS_DLL_DECL boss_loathebAI : public ScriptedAI
         if (Enrage_Timer < diff)
         {
             DoCast(m_creature,SPELL_BERSERK);
-            Enrage_Timer = 420000;
+            Enrage_Timer = 720000;
         }else Enrage_Timer -= diff;
 
         //Summon_Timer

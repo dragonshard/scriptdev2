@@ -64,8 +64,8 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
 
     void Reset()
     {
-        Disruption_Timer = 5000+rand()%10000;
-        Feaver_Timer = 40000;
+    	Disruption_Timer = 5000+rand()%10000;
+    	Feaver_Timer = 40000;
 
         if(m_pInstance)
             m_pInstance->SetData(TYPE_HEIGAN, NOT_STARTED);
@@ -111,7 +111,7 @@ struct MANGOS_DLL_DECL boss_heiganAI : public ScriptedAI
         if (Feaver_Timer < diff)
         {
             DoCast(m_creature->getVictim(), m_bIsHeroicMode ? H_SPELL_FEAVER : SPELL_FEAVER);
-            Feaver_Timer = 40000;
+            Feaver_Timer = 30000+rand()%10000;
         }else Feaver_Timer -= diff;
 
         DoMeleeAttackIfReady();

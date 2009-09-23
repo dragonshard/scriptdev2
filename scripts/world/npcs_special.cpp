@@ -927,7 +927,7 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
     {
     }
 
-    void UpdateAI(const uint32 diff)
+    void UpdateEscortAI(const uint32 diff)
     {
         if (bCanRun && !m_creature->isInCombat())
         {
@@ -944,7 +944,7 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
                         case ENTRY_DG_KEL: DoScriptText(SAY_DG_KEL_GOODBYE,m_creature,pUnit); break;
                     }
 
-                    Start(false,true,true);
+                    Start(false,true);
                 }
                 else
                     EnterEvadeMode();                       //something went wrong
@@ -953,7 +953,10 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
             }else RunAwayTimer -= diff;
         }
 
-        npc_escortAI::UpdateAI(diff);
+        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
     }
 };
 

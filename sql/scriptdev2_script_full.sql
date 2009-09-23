@@ -1965,9 +1965,56 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 (-1574017,'See... you... soon.',13200,1,0,0,'dalronn SAY_DAL_DEATH'),
 (-1574018,'There\'s no... greater... glory.',13201,1,0,0,'dalronn SAY_DAL_DEATH_REAL'),
 (-1574019,'You may serve me yet.',13202,1,0,0,'dalronn SAY_DAL_KILL'),
-(-1574020,'Skarvald, you incompetent slug! Return and make yourself useful!',13203,1,0,0,'dalronn SAY_DAL_SKA_DIES_REPLY');
+(-1574020,'Skarvald, you incompetent slug! Return and make yourself useful!',13203,1,0,0,'dalronn SAY_DAL_SKA_DIES_REPLY'),
+
+(-1574021,'%s casts Frost Tomb on $N',0,3,0,0,'keleseth EMOTE_FROST_TOMB');
 
 -- -1 575 000 UTGARDE PINNACLE
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1575000,'My liege! I have done as you asked, and now beseech you for your blessing!',13856,1,0,0,'svala SAY_INTRO_1'),
+(-1575001,'Your sacrifice is a testament to your obedience. Indeed you are worthy of this charge. Arise, and forever be known as Svala Sorrowgrave!',14732,1,0,0,'svala SAY_INTRO_2_ARTHAS'),
+(-1575002,'The sensation is... beyond my imagining. I am yours to command, my king.',13857,1,0,0,'svala SAY_INTRO_3'),
+(-1575003,'Your first test awaits you. Destroy our uninvited guests.',14733,1,0,0,'svala SAY_INTRO_4_ARTHAS'),
+(-1575004,'I will be happy to slaughter them in your name! Come, enemies of the Scourge! I will show you the might of the Lich King!',13858,1,0,0,'svala SAY_INTRO_5'),
+(-1575005,'I will vanquish your soul!',13842,1,0,0,'svala SAY_AGGRO'),
+(-1575006,'You were a fool to challenge the power of the Lich King!',13845,1,0,0,'svala SAY_SLAY_1'),
+(-1575007,'Your will is done, my king.',13847,1,0,0,'svala SAY_SLAY_2'),
+(-1575008,'Another soul for my master.',13848,1,0,0,'svala SAY_SLAY_3'),
+(-1575009,'Your death approaches.',13850,1,0,0,'svala SAY_SACRIFICE_1'),
+(-1575010,'Go now to my master.',13851,1,0,0,'svala SAY_SACRIFICE_2'),
+(-1575011,'Your end is inevitable.',13852,1,0,0,'svala SAY_SACRIFICE_3'),
+(-1575012,'Yor-guul mak!',13853,1,0,0,'svala SAY_SACRIFICE_4'),
+(-1575013,'Any last words?',13854,1,0,0,'svala SAY_SACRIFICE_5'),
+(-1575014,'Nooo! I did not come this far... to...',13855,1,0,0,'svala SAY_DEATH'),
+
+(-1575015,'What this place? I will destroy you!',13464,1,0,0,'gortok SAY_AGGRO'),
+(-1575016,'You die! That what master wants!',13465,1,0,0,'gortok SAY_SLAY_1'),
+(-1575017,'An easy task!',13466,1,0,0,'gortok SAY_SLAY_2'),
+(-1575018,' ',13467,1,0,0,'gortok SAY_DEATH'),
+
+(-1575019,'What mongrels dare intrude here? Look alive, my brothers! A feast for the one that brings me their heads!',13497,1,0,0,'skadi SAY_AGGRO'),
+(-1575020,'Sear them to the bone!',13498,1,0,0,'skadi SAY_DRAKEBREATH_1'),
+(-1575021,'Go now! Leave nothing but ash in your wake!',13499,1,0,0,'skadi SAY_DRAKEBREATH_2'),
+(-1575022,'Cleanse our sacred halls with flame!',13500,1,0,0,'skadi SAY_DRAKEBREATH_3'),
+(-1575023,'I ask for ... to kill them, yet all I get is feeble whelps! By Ye.. SLAUGHTER THEM!',13501,1,0,0,'skadi SAY_DRAKE_HARPOON_1'),
+(-1575024,'If one more harpoon touches my drake I\'ll flae my miserable heins.',13502,1,0,0,'skadi SAY_DRAKE_HARPOON_2'),
+(-1575025,'Mjor Na Ul Kaval!',13503,1,0,0,'skadi SAY_KILL_1'),
+(-1575026,'Not so brash now, are you?',13504,1,0,0,'skadi SAY_KILL_2'),
+(-1575027,'I\'ll mount your skull from the highest tower!',13505,1,0,0,'skadi SAY_KILL_3'),
+(-1575028,'ARGH! You call that... an attack? I\'ll... show... aghhhh...',13506,1,0,0,'skadi SAY_DEATH'),
+(-1575029,'You motherless knaves! Your corpses will make fine morsels for my new drake!',13507,1,0,0,'skadi SAY_DRAKE_DEATH'),
+(-1575030,'%s is within range of the harpoon launchers!',0,3,0,0,'skadi EMOTE_HARPOON_RANGE'),
+
+(-1575031,'You invade my home and then dare to challenge me? I will tear the hearts from your chests and offer them as gifts to the death god! Rualg nja gaborr!',13609,1,0,0,'ymiron SAY_AGGRO'),
+(-1575032,'Bjorn of the Black Storm! Honor me now with your presence!',13610,1,0,0,'ymiron SAY_SUMMON_BJORN'),
+(-1575033,'Haldor of the rocky cliffs, grant me your strength!',13611,1,0,0,'ymiron SAY_SUMMON_HALDOR'),
+(-1575034,'Ranulf of the screaming abyss, snuff these maggots with darkest night!',13612,1,0,0,'ymiron SAY_SUMMON_RANULF'),
+(-1575035,'Tor of the Brutal Siege! Bestow your might upon me!',13613,1,0,0,'ymiron SAY_SUMMON_TORGYN'),
+(-1575036,'Your death is only the beginning!',13614,1,0,0,'ymiron SAY_SLAY_1'),
+(-1575037,'You have failed your people!',13615,1,0,0,'ymiron SAY_SLAY_2'),
+(-1575038,'There is a reason I am king!',13616,1,0,0,'ymiron SAY_SLAY_3'),
+(-1575039,'Bleed no more!',13617,1,0,0,'ymiron SAY_SLAY_4'),
+(-1575040,'What... awaits me... now?',13618,1,0,0,'ymiron SAY_DEATH');
 
 -- -1 576 000 NEXUS
 INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
@@ -2080,6 +2127,29 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 -- -1 599 000 HALLS OF STONE
 
 -- -1 600 000 DRAK'THARON KEEP
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1600000,'More grunts, more glands, more FOOD!',13181,1,0,0,'trollgore SAY_AGGRO'),
+(-1600001,'So hungry! Must feed!',13182,1,0,0,'trollgore SAY_CONSUME'),
+(-1600002,'Aaaargh...',13183,1,0,0,'trollgore SAY_DEATH'),
+(-1600003,'Corpse go boom!',13184,1,0,0,'trollgore SAY_EXPLODE'),
+(-1600004,'You have gone, me gonna eat you!',13185,1,0,0,'trollgore SAY_KILL'),
+
+(-1600005,'The chill that you feel is the herald of your doom!',13173,1,0,0,'novos SAY_AGGRO'),
+(-1600006,'Your efforts... are in vain.',13174,1,0,0,'novos SAY_DEATH'),
+(-1600007,'Such is the fate of all who oppose the Lich King.',13175,1,0,0,'novos SAY_KILL'),
+(-1600008,'Bolster my defenses! Hurry, curse you!',13176,1,0,0,'novos SAY_ADDS'),
+(-1600009,'Surely you can see the futility of it all!',13177,1,0,0,'novos SAY_BUBBLE_1'),
+(-1600010,'Just give up and die already!',13178,1,0,0,'novos SAY_BUBBLE_2'),
+(-1600011,'%s calls for assistance.',0,3,0,0,'novos EMOTE_ASSISTANCE'),
+
+(-1600012,'Tharon\'ja sees all! The work of mortals shall not end the eternal dynasty!',13862,1,0,0,'tharonja SAY_AGGRO'),
+(-1600013,'As Tharon\'ja predicted.',13863,1,0,0,'tharonja SAY_KILL_1'),
+(-1600014,'As it was written.',13864,1,0,0,'tharonja SAY_KILL_2'),
+(-1600015,'Your flesh serves Tharon\'ja now!',13865,1,0,0,'tharonja SAY_FLESH_1'),
+(-1600016,'Tharon\'ja has a use for your mortal shell!',13866,1,0,0,'tharonja SAY_FLESH_2'),
+(-1600017,'No! A taste... all too brief!',13867,1,0,0,'tharonja SAY_SKELETON_1'),
+(-1600018,'Tharon\'ja will have more!',13868,1,0,0,'tharonja SAY_SKELETON_2'),
+(-1600019,'Im... impossible! Tharon\'ja is eternal! Tharon\'ja... is...',13869,1,0,0,'tharonja SAY_DEATH');
 
 -- -1 601 000 AZJOL-NERUB
 
@@ -2135,6 +2205,39 @@ INSERT INTO script_texts (entry,content_default,sound,type,language,emote,commen
 -- -1 603 000 ULDUAR
 
 -- -1 604 000 GUNDRAK
+INSERT INTO script_texts (entry,content_default,sound,type,language,emote,comment) VALUES
+(-1604000,'Drakkari gonna kill anybody who trespass on these lands!',14443,1,0,0,'sladran SAY_AGGRO'),
+(-1604001,'Minions of the scale, heed my call!',14444,1,0,0,'sladran SAY_SUMMON_SNAKE'),
+(-1604002,'Our thousand fangs gonna rend your flesh! ',14445,1,0,0,'sladran SAY_SUMMON_CONSTRICT'),
+(-1604003,'Ye not breathin\'! Good.',14446,1,0,0,'sladran SAY_SLAY_1'),
+(-1604004,'You scared now?',14447,1,0,0,'sladran SAY_SLAY_2'),
+(-1604005,'I\'ll eat you next, mon!',14448,1,0,0,'sladran SAY_SLAY_3'),
+(-1604006,'I sssee now... Ssscourge wasss not... our greatessst enemy...',14449,1,0,0,'sladran SAY_DEATH'),
+(-1604007,'%s begins to cast Poison Nova!',0,3,0,0,'sladran EMOTE_NOVA'),
+
+(-1604008,'%s surges forward!',0,2,0,0,'colossus EMOTE_SURGE'),
+(-1604009,'%s seep into the ground.',0,2,0,0,'colossus EMOTE_SEEP'),
+(-1604010,'%s begins to glow faintly.',0,2,0,0,'colossus EMOTE_GLOW'),
+
+(-1604011,'We fought back da Scourge. What chance joo be thinkin\' JOO got?',14721,1,0,0,'moorabi SAY_AGGRO'),
+(-1604012,'Da ground gonna swallow you up! ',14723,1,0,0,'moorabi SAY_QUAKE'),
+(-1604013,'Get ready for somethin\'... much... BIGGAH!',14722,1,0,0,'moorabi SAY_TRANSFORM'),
+(-1604014,'I crush you, cockroaches!',14725,1,0,0,'moorabi SAY_SLAY_1'),
+(-1604015,'Who gonna stop me; you?',14726,1,0,0,'moorabi SAY_SLAY_2'),
+(-1604016,'Not so tough now.',14727,1,0,0,'moorabi SAY_SLAY_3'),
+(-1604017,'If our gods can die... den so can we...',14728,1,0,0,'moorabi SAY_DEATH'),
+(-1604018,'%s begins to transform!',0,3,0,0,'moorabi EMOTE_TRANSFORM'),
+
+(-1604019,'I\'m gonna spill your guts, mon!',14430,1,0,0,'galdarah SAY_AGGRO'),
+(-1604020,'Ain\'t gonna be nottin\' left after this!',14431,1,0,0,'galdarah SAY_TRANSFORM_1'),
+(-1604021,'You wanna see power? I\'m gonna show you power!',14432,1,0,0,'galdarah SAY_TRANSFORM_2'),
+(-1604022,'Gut them! Impale them!',14433,1,0,0,'galdarah SAY_SUMMON_1'),
+(-1604023,'Kill them all!',14434,1,0,0,'galdarah SAY_SUMMON_2'),
+(-1604024,'Say hello to my BIG friend!',14435,1,0,0,'galdarah SAY_SUMMON_3'),
+(-1604025,'What a rush!',14436,1,0,0,'galdarah SAY_SLAY_1'),
+(-1604026,'Who needs gods, when WE ARE GODS!',14437,1,0,0,'galdarah SAY_SLAY_2'),
+(-1604027,'I told ya so!',14438,1,0,0,'galdarah SAY_SLAY_3'),
+(-1604028,'Even the mighty... can fall.',14439,1,0,0,'galdarah SAY_DEATH');
 
 -- -1 608 000 VIOLET HOLD
 

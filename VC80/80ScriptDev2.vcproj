@@ -394,6 +394,14 @@
 			Name="scripts"
 			>
 			<Filter
+				Name="battlegrounds"
+				>
+				<File
+					RelativePath="..\scripts\battlegrounds\battleground.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
 				Name="custom"
 				>
 				<File
@@ -1570,10 +1578,38 @@
 					<Filter
 						Name="ahnkahet"
 						>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\ahnkahet\boss_jedoga.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\ahnkahet\boss_nadox.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\ahnkahet\boss_taldaram.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\ahnkahet\boss_volazj.cpp"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="azjol-nerub"
 						>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\azjol-nerub\boss_anubarak.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\azjol-nerub\boss_hadronox.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\azjol-nerub\azjol-nerub\boss_krikthir.cpp"
+							>
+						</File>
 						<File
 							RelativePath="..\scripts\northrend\azjol-nerub\azjol-nerub\def_azjol-nerub.h"
 							>
@@ -1617,6 +1653,14 @@
 					</File>
 					<File
 						RelativePath="..\scripts\northrend\gundrak\boss_sladran.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\gundrak\def_gundrak.h"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\gundrak\instance_gundrak.cpp"
 						>
 					</File>
 				</Filter>
@@ -1774,6 +1818,18 @@
 					<Filter
 						Name="halls_of_stone"
 						>
+						<File
+							RelativePath="..\scripts\northrend\ulduar\halls_of_stone\boss_maiden_of_grief.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\ulduar\halls_of_stone\boss_sjonnir.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\northrend\ulduar\halls_of_stone\halls_of_stone.cpp"
+							>
+						</File>
 					</Filter>
 					<Filter
 						Name="ulduar"

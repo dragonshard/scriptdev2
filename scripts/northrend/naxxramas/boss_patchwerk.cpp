@@ -66,7 +66,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
     void KilledUnit(Unit* Victim)
     {
-        if (rand()%5)
+        if (urand(0, 4))
             return;
 
         DoScriptText(SAY_SLAY, m_creature);
@@ -82,7 +82,7 @@ struct MANGOS_DLL_DECL boss_patchwerkAI : public ScriptedAI
 
     void Aggro(Unit *who)
     {
-        if (rand()%2)
+        if (urand(0, 1))
             DoScriptText(SAY_AGGRO1, m_creature);
         else
             DoScriptText(SAY_AGGRO2, m_creature);

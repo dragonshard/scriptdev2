@@ -81,16 +81,8 @@ struct MANGOS_DLL_DECL boss_anubrekhanAI : public ScriptedAI
     void Reset()
     {
         Impale_Timer = 15000;                               //15 seconds
-        LocustSwarm_Timer = 80000 + (rand()%40000);         //Random time between 80 seconds and 2 minutes for initial cast
-        Summon_Timer = LocustSwarm_Timer + 20000;           //45 seconds after initial locust swarm
-        Berserk_Timer = 300000;
-
-        DespawnGuard();
-        for(uint8 i = 0; i < (m_bIsHeroicMode ? 2 : 1); i++)
-            m_creature->SummonCreature(NPC_CRYPT_GUARD, m_creature->GetPositionX(), m_creature->GetPositionY()+10, m_creature->GetPositionZ(), m_creature->GetOrientation(), TEMPSUMMON_CORPSE_TIMED_DESPAWN, 300000);
-
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_ANUB_REKHAN, NOT_STARTED);
+        LocustSwarm_Timer = urand(80000, 120000);           //Random time between 80 seconds and 2 minutes for initial cast
+        Summon_Timer = LocustSwarm_Timer + 45000;           //45 seconds after initial locust swarm
     }
 
     void KilledUnit(Unit* pVictim)

@@ -198,12 +198,12 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
 
     void Reset()
     {
-        FrostBolt_Timer = (rand()%60)*1000;                 //It won't be more than a minute without cast it
+        FrostBolt_Timer = urand(1000, 600000);              //It won't be more than a minute without cast it
         FrostBoltNova_Timer = 15000;                        //Cast every 15 seconds
-        ChainsOfKelthuzad_Timer = (rand()%30+30)*1000;      //Cast no sooner than once every 30 seconds
+        ChainsOfKelthuzad_Timer = urand(30000, 60000);      //Cast no sooner than once every 30 seconds
         ManaDetonation_Timer = 20000;                       //Seems to cast about every 20 seconds
         ShadowFisure_Timer = 25000;                         //25 seconds
-        FrostBlast_Timer = (rand()%30+30)*1000;             //Random time between 30-60 seconds
+        FrostBlast_Timer = urand(30000, 60000);             //Random time between 30-60 seconds
         GuardiansOfIcecrown_Timer = 5000;                   //5 seconds for summoning each Guardian of Icecrown in phase 3
 
         for(int i=0; i<5; ++i)
@@ -471,9 +471,8 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
         //Check for Frost Bolt
         if (FrostBolt_Timer < diff)
         {
-            if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(pTarget, m_bIsHeroic ? H_SPELL_FROST_BOLT : SPELL_FROST_BOLT);
-            FrostBolt_Timer = (rand()%60)*1000;
+            DoCast(m_creature->getVictim(),SPELL_FROST_BOLT);
+            FrostBolt_Timer = urand(1000, 60000);
         }else FrostBolt_Timer -= diff;
 
         //Check for Frost Bolt Nova
@@ -493,7 +492,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             //else
                 //DoScriptText(SAY_CHAIN2, m_creature);
 
-            ChainsOfKelthuzad_Timer = (rand()%30+30)*1000;
+            ChainsOfKelthuzad_Timer = urand(30000, 60000);
         }else ChainsOfKelthuzad_Timer -= diff;
 
         //Check for Mana Detonation
@@ -529,7 +528,7 @@ struct MANGOS_DLL_DECL boss_kelthuzadAI : public ScriptedAI
             if (urand(0, 1))
                 DoScriptText(SAY_FROST_BLAST, m_creature);
 
-            FrostBlast_Timer = (rand()%30+30)*1000;
+            FrostBlast_Timer = urand(30000, 60000);
         }else FrostBlast_Timer -= diff;
 
         //start phase 3 when we are 40% health

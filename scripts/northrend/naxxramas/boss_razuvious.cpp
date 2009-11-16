@@ -185,7 +185,8 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         //JaggedKnife_Timer
         if (JaggedKnife_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_JAGGED_KNIFE);
+            if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
+                DoCast(target, SPELL_JAGGED_KNIFE);
             JaggedKnife_Timer = 10000;
         }else JaggedKnife_Timer -= diff;
 

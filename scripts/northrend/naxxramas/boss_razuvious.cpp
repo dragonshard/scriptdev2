@@ -75,12 +75,14 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
     uint32 UnbalancingStrike_Timer;
     uint32 DisruptingShout_Timer;
     uint32 CommandSound_Timer;
+    uint32 JaggedKnife_Timer;
 
     void Reset()
     {
         UnbalancingStrike_Timer = 30000;                    //30 seconds
-        DisruptingShout_Timer = 25000;                      //25 seconds
+        DisruptingShout_Timer = 15000;                      //15 seconds
         CommandSound_Timer = 40000;                         //40 seconds
+        JaggedKnife_Timer = 10000;                          //10 seconds
 
         if (m_pInstance)
             m_pInstance->SetData(TYPE_RAZUVIOUS, NOT_STARTED);
@@ -177,8 +179,15 @@ struct MANGOS_DLL_DECL boss_razuviousAI : public ScriptedAI
         if (DisruptingShout_Timer < diff)
         {
             DoCast(m_creature->getVictim(), SPELL_DISRUPTING_SHOUT);
-            DisruptingShout_Timer = 25000;
+            DisruptingShout_Timer = 15000;
         }else DisruptingShout_Timer -= diff;
+
+        //JaggedKnife_Timer
+        if (JaggedKnife_Timer < diff)
+        {
+            DoCast(m_creature->getVictim(), SPELL_JAGGED_KNIFE);
+            JaggedKnife_Timer = 10000;
+        }else JaggedKnife_Timer -= diff;
 
         //CommandSound_Timer
         if (CommandSound_Timer < diff)
